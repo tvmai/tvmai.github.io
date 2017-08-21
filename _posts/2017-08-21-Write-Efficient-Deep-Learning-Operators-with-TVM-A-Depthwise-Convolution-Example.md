@@ -314,6 +314,7 @@ table th:nth-of-type(2) {
 
 Case 2 is faster than case 1. It's because in case 2 `num_thread_x=8` and `num_vthread_x=4` together brings coalesced memory access, as illustrated below
 (each color represents the workload of one thread):
+
 {:center}
 ![image](/images/depthconv_tutorial/vthread_and_strided_pattern.png){: width="80%"}
 {:center}
