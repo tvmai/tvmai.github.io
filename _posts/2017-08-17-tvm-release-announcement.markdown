@@ -130,7 +130,7 @@ In the first part of result we compared the TVM CPU schedule to nnpack on a rasp
 We can find that with TVM’s autotuned kernels, we can obtain performance similar to the hand-optimized kernels in nnpack for the raspberry pi experiments.
 
 ### GPU Results
-**Author Credit** These and benchmarks and corresponding schedule optimizations are created by our contributors:  [Leyuan Wang](http://www.ece.ucdavis.edu/~laurawly/) (AWS / UCDavis), [Yuwei Hu](Huyuwei.github.io)(TuSimple) and Weitang Liu (AWS/ UCDavis). They deserve all the credits.
+**Author Credit** These benchmarks and corresponding schedule optimizations are created by our contributors:  [Leyuan Wang](http://www.ece.ucdavis.edu/~laurawly/) (AWS / UCDavis), [Yuwei Hu](http://huyuwei.github.io)(TuSimple) and Weitang Liu (AWS/ UCDavis). They deserve all the credits.
 
 As a proof of concept, we created an end to end compilation pipeline that can compile MxNet models down to TVM execution graphs. We apply optimization within and between graph nodes by automatically fusing operators together and letting TVM generate the fused kernels.
 We benchmarked the mobilenet ImageNet workload, and discuss the results below:
