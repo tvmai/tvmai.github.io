@@ -12,8 +12,8 @@ Usually these operators are hard to optimize and require great efforts of HPC ex
 This blog teaches you how to write high-performance GPU operator kernels with the help of TVM.
 We use depthwise convolution (i.e. [topi.nn.depthwise_conv2d_nchw](http://docs.tvmlang.org/api/python/topi.html#topi.nn.depthwise_conv2d_nchw)) as an example,
 and demonstrate how we can improve over the already hand optimized CUDA kernel in tensorflow.
-Our final version in TVM is 2x-4x faster than tf-1.2-cudnn under different workloads, and 3x-7x faster with operator fusion.
-Below is the result with Filter = [1, 1, 3, 3], stride = [1, 1], padding = 'SAME', tested on GTX1080:
+Our final version is 2x-4x faster than tf-1.2-cudnn under different workloads, and 3x-7x faster with operator fusion enabled.
+Below is the result tested on GTX1080, with filter size = [1, 256, 3, 3], stride = [1, 1], padding = 'SAME':
 
 {:center: style="text-align: center"}
 ![image](/images/depthconv_tutorial/tf_compare.png){: width="95%"}
@@ -85,11 +85,11 @@ Shared memory is allocated per block. It's common practice to load data from glo
 The size of shared memory is limited (usually 48K), so we must be cautious of shared memory overflow.
 Besides, too much shared memory allocated to one block limits the number of active blocks per multiprocessor [2].
 
-When using shared memory, we should try to avoid bank conflicts. Shared memory is divided into equally sized memory modules (banks) that can be accessed simultaneously,
+Another performance issue with shared memory is bank conflicts. Shared memory is divided into equally sized memory modules (banks) that can be accessed simultaneously,
 however, if multiple threads access the same memory bank (causing bank conflicts), the accesses will be serialized, thus decreasing the effective bandwidth.
 
 Shared memory banks are organized such that successive addresses are assigned to successive banks.
-To avoid bank conflicts, it's better that consecutive threads access consecutive memory addresses, as illustrated below:
+To avoid bank conflicts, it's better that successive threads access successive memory addresses, as illustrated below (each color represents one shared memory bank):
 
 {:center}
 ![image](/images/depthconv_tutorial/bank_conflicts.png){: width="95%"}
@@ -133,7 +133,8 @@ Here is the result:
 | [1, 256, 64, 64] | [256, 1, 3, 3] | [1, 1] | 130.9                    | 98.9              |
 | [1, 256, 96, 96] | [256, 1, 3, 3] | [1, 1] | 251.6                    | 387.4             |
 
-As we can see, this schedule performs well with small channel size like 21 x 21 or 32 x 32, however, its performance drops seriously as the channel size increases to larger than 64 x 64. One main reason is that too much shared memory allocated to one block limits the number of active blocks per multiprocessor.
+As we can see, this schedule performs well with small channel size like 21 x 21 or 32 x 32, however, its performance drops seriously as the channel size increases to larger than 64 x 64.
+One main reason is that too much shared memory allocated to one block limits the number of active blocks per multiprocessor.
 
 We modify the schedule to divide one large channel into smaller blocks. For example, one channel (64 x 64 or 96 x 96) is divided into blocks of 32 x 32,
 and one cuda block takes care of one 32 x 32 block:
@@ -194,7 +195,7 @@ It has better data reuse than case 1's 4x1 tile.
 
 - Case 3 is slower than case 2. It's because in case 3, the workload per thread is too large and leads to much cost of local memory read.
 
-- Case 4 is slower than case 3. It's because `num_thread_x = 32` helps avoid bank conflicts, while `num_thread_y = 32` doesn't.
+- Case 4 is slower than case 3. It's because `num_thread_x = 32` ensures no bank conflicts, while `num_thread_y = 32` doesn't.
 
 To summarize what we learn from above observations:
 
@@ -327,7 +328,7 @@ thus avoiding bank conflicts, as illustrated below (each color represents one th
 ![image](/images/depthconv_tutorial/vthread_and_strided_pattern.png){: width="90%"}
 {:center}
 
-In theory case 3 4 should be the same fast, since they have the same workload per thread, and both enjoy efficient shared memory access. Somehow case 4 is just a little faster.
+In theory case 3 and 4 should be the same fast, since they have the same workload per thread, and both enjoy efficient shared memory access. Somehow case 4 is just a little faster.
 
 Still remember tensorflow's speed? It's 251.6us, and now TVM is 2.8x faster. 387.4 -> 132.5 -> 95.9 -> 90.9, blocking helps the most; tuning thread numbers saves 37us;
 vthread saves additional 5us.
