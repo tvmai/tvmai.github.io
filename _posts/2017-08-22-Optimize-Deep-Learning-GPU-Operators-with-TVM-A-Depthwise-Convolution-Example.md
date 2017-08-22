@@ -1,14 +1,14 @@
 ---
 layout: post
 title:  "Optimize Deep Learning GPU Operators with TVM: A Depthwise Convolution Example"
-date:   2017-08-21
+date:   2017-08-22
 author: Yuwei Hu
 ---
 
 Efficient deep learning operators are at the core of deep learning systems. This blog teaches you how to write efficient GPU operators with the help of [TVM](https://github.com/dmlc/tvm),
 an end to end tensor IR/DSL stack for deploying deep learning workloads to hardwares.
 
-We use the depthwise convolution operator as an example, i.e. [topi.nn.depthwise_conv2d_nchw](http://docs.tvmlang.org/api/python/topi.html#topi.nn.depthwise_conv2d_nchw),
+We use the depthwise convolution as an example, i.e. [topi.nn.depthwise_conv2d_nchw](http://docs.tvmlang.org/api/python/topi.html#topi.nn.depthwise_conv2d_nchw),
 that is 2x faster than tensorflow's hand crafted version. Below is the speed comparison with Input = [1, 1, 96, 96], Filter = [1, 1, 32, 32], stride = [1, 1], padding = 'SAME':
 
 {:center: style="text-align: center"}
@@ -47,7 +47,7 @@ Output = tvm.compute(
 
 ## 2. General GPU Optimization Guidelines
 
-This part briefly talks about two concepts we should know when optimizing CUDA code: data reuse, shared memory and bank conflicts.
+This part briefly talks about three concepts we should know when optimizing CUDA code: data reuse, shared memory and bank conflicts.
 It would be great if you already know them, then you may skip this part and go directly to part 3.
 
 ### Data Reuse
@@ -128,7 +128,8 @@ s[Output].bind(Output.op.axis[0], block_y)
 s[Output].bind(Output.op.axis[1], block_x)
 ```
 
-We test the average time cost of 1000 runs on GTX 1080, and compare with [depthwise_conv2d in tensorflow](https://www.tensorflow.org/versions/r0.12/api_docs/python/nn/convolution#depthwise_conv2d) (pip version 1.2.0). Here is the result:
+We test the average time cost of 1000 runs on GTX 1080, and compare with [depthwise_conv2d in tensorflow](https://www.tensorflow.org/versions/r0.12/api_docs/python/nn/convolution#depthwise_conv2d).
+Here is the result:
 
 | Input            | Filter         | stride | tf-1.2-cudnn SAME pad (us) | TVM SAME pad (us) |
 |:----------------:|:--------------:|:------:|:------------------------:|:-----------------:|
@@ -198,13 +199,13 @@ It has better data reuse than case 1's 4x1 tile.
 
 - Case 3 is slower than case 2. It's because in case 3, the workload per thread is too large and leads to much cost of local memory read.
 
-- Case 4 is slower than case 3. It's because `num_thread_x = 32` brings coalesced memory access, while `num_thread_y = 32` doesn't.
+- Case 4 is slower than case 3. It's because `num_thread_x = 32` helps avoid bank conflicts, while `num_thread_y = 32` doesn't.
 
 To summarize what we learn from above observations:
 
 - Large tile is good for data reuse, but not good for local memory read.
-- The influence of `num_thread_y` and `num_thread_x` on coalesced memory access is asymmetric.
-- To find the optimal combination of `num_thread_y` and `num_thread_x` is to achieve a balance of coalesced memory access, data reuse, and local memory read.
+- The influence of `num_thread_y` and `num_thread_x` on bank conflics is asymmetric.
+- To find the optimal combination of `num_thread_y` and `num_thread_x` is to achieve a balance of shared memory access (avoid bank conflicts), data reuse, and local memory read.
 
 Pretty tricky. So, what exactly should we do to find the optimal combination? The answer is brute force search. 
 We can pass `num_thread_y` and `num_thread_x` as arguments to the schedule function, and try all possible combinations to find the optimal one. This can be done easily in TVM:
