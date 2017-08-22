@@ -146,7 +146,7 @@ We are working on more experiments and will release new results as they are obta
 
 
 ## Open Source Effort
-TVM started as a research project of Paul G. Allen School Computer Science and Engineering at University of Washington. The TVM stack is designed to support [DLPack](https://github.com/dmlc/dlpack), a consensus on tensor data structure by multiple major deep learning frameworks. We have received early contributions from from UW, AWS, Qiho 360, Facebook, HKUST, TuSimple, UCDavis, SJTU as well members of DMLC open-source community and DLPack initiative. Going forward, the project will follow following the Apache open-source model, to created a community maintained project. You are more than welcomed to join us and lead the effort.
+TVM started as a research project of Paul G. Allen School Computer Science and Engineering at University of Washington. The TVM stack is designed to support [DLPack](https://github.com/dmlc/dlpack), a consensus on tensor data structure by multiple major deep learning frameworks. We have received early contributions from from UW, AWS, Qiho 360, Facebook, HKUST, TuSimple, UCDavis, SJTU as well members of DMLC open-source community and DLPack initiative. Going forward, the project will follow the Apache open-source model, to create a community maintained project. You are more than welcome to join us and lead the effort.
 
 ## Acknowledgement
 This project wouldn’t become possible without our early contributors. We would like to thank Yizhi Liu(Qihoo 360), Yuwei Hu(TuSimple),
