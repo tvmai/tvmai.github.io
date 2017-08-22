@@ -19,4 +19,11 @@ TVM works with deep learning frameworks to provide end to end compilation to dif
 
 News
 ----
-- Checkout our [Release Annoucement](/2017/08/17/tvm-release-announcement.html)
+<ul>
+{% for post in site.posts %}
+<li> <span>{{ post.date | date: "%b %-d, %Y" }} :
+   <a class="post-link" href="{{ post.url | prepend: site.baseurl }}.html">{{ post.title }}</a>
+</span>
+</li>
+{% endfor %}
+</ul>

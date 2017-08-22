@@ -6,5 +6,12 @@ group : blog
 order : 100
 ---
 {% include JB/setup %}
-{% assign posts_collate = site.posts %}
-{% include JB/posts_collate %}
+
+<ul>
+{% for post in site.posts %}
+<li> <span>{{ post.date | date: "%b %-d, %Y" }} :
+   <a class="post-link" href="{{ post.url | prepend: site.baseurl }}.html">{{ post.title }}</a>
+</span>
+</li>
+{% endfor %}
+</ul>
