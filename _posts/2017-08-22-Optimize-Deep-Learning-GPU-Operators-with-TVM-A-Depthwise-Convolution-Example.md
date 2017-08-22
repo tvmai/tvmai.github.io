@@ -12,7 +12,7 @@ Usually these operators are hard to optimize and require great efforts of HPC ex
 This blog teaches you how to write high-performance GPU operator kernels with the help of TVM.
 We use depthwise convolution (i.e. [topi.nn.depthwise_conv2d_nchw](http://docs.tvmlang.org/api/python/topi.html#topi.nn.depthwise_conv2d_nchw)) as an example,
 and demonstrate how we can improve over the already hand optimized CUDA kernel in tensorflow.
-Our final version is 2x-4x faster than tf-1.2-cudnn under different workloads, and 3x-7x faster with operator fusion enabled.
+Our final version is 2x-4x faster than the optimized kernel in tf-1.2-cudnn under different workloads, and 3x-7x faster with operator fusion enabled.
 Below is the result tested on GTX1080, with filter size = [1, 256, 3, 3], stride = [1, 1], padding = 'SAME':
 
 {:center: style="text-align: center"}
@@ -342,7 +342,7 @@ In fact, TVM can be extremely faster than tensorflow with large kernel size or c
 | [1, 256, 96, 96] | [256, 2, 3, 3] | [1, 1] | 659.9                    | 143.7             | 4.6x              |
 | [1, 256, 96, 96] | [256, 2, 5, 5] | [1, 1] | 1203.9                   | 170.5             | 7.1x              |
  
-## 3. Operator Fusion
+## Operator Fusion
 
 One typical optimization we can do in deep learning is operator fusion, that computes multiple operators together in a single kernel without saving intermediate results back to global memory.
 TVM supports that out of the box.
