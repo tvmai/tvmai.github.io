@@ -12,7 +12,7 @@ Usually these operators are hard to optimize and require great efforts of HPC ex
 This blog teaches you how to write high-performance GPU operator kernels with the help of TVM.
 We use depthwise convolution (i.e. [topi.nn.depthwise_conv2d_nchw](http://docs.tvmlang.org/api/python/topi.html#topi.nn.depthwise_conv2d_nchw)) as an example,
 and demonstrate how we can improve over the already hand optimized CUDA kernel in tensorflow.
-Our final version is 2x-4x faster than the optimized kernel in tf-1.2-cudnn under different workloads, and 3x-7x faster with operator fusion enabled.
+Our final version is 2x-4x faster than the optimized kernel in tf-1.2 under different workloads, and 3x-7x faster with operator fusion enabled.
 Below is the result tested on GTX1080, with filter size = [1, 256, 3, 3], stride = [1, 1], padding = 'SAME':
 
 {:center: style="text-align: center"}
@@ -21,11 +21,15 @@ Below is the result tested on GTX1080, with filter size = [1, 256, 3, 3], stride
 
 ## Introduction to Depthwise Convolution
 
-Depthwise convolution is an important building block of modern architectures, such as [Xception](https://arxiv.org/abs/1610.02357) and [MobileNet](https://arxiv.org/abs/1704.04861).
+Depthwise convolution is an important building block of modern architectures, such as Xception [1] and MobileNet [2].
 It's an effective method to reduce the computation complexity of deep neural networks.
 
 {:center: style="text-align: center"}
 ![image](/images/depthconv_tutorial/conv_and_depthconv.png){: width="80%"}
+{:center}
+
+{:center: style="text-align: center"}
+source: [http://machinethink.net/blog/googles-mobile-net-architecture-on-iphone/](http://machinethink.net/blog/googles-mobile-net-architecture-on-iphone/)
 {:center}
 
 In TVM, depthwise convolution can be declared as:
@@ -55,7 +59,7 @@ This part briefly talks about three concepts we should know when optimizing CUDA
 It would be great if you already know them, then you may skip this part.
 
 ### Data Reuse
-In modern computing architectures, the cost of loading data from memory is much higher than doing a single floating point computation [1].
+In modern computing architectures, the cost of loading data from memory is much higher than doing a single floating point computation [3].
 Because of that, we always want to reuse the input data after they are loaded into registers or shared memory (cache).
 
 There are two forms of data reuse in depthwise convolution: filter reuse and input reuse. Filter reuse happens as the filter slides over the input channel and computes multiple times.
@@ -83,7 +87,7 @@ Shared memory can be seen as cache in GPU. It is on-chip and much faster than gl
 Shared memory is allocated per block. It's common practice to load data from global memory into shared memory, and then all threads in the block read data from shared memory.
 
 The size of shared memory is limited (usually 48K), so we must be cautious of shared memory overflow.
-Besides, too much shared memory allocated to one block limits the number of active blocks per multiprocessor [2].
+Besides, too much shared memory allocated to one block limits the number of active blocks per multiprocessor.
 
 Another performance issue with shared memory is bank conflicts. Shared memory is divided into equally sized memory modules (banks) that can be accessed simultaneously,
 however, if multiple threads access the same memory bank (causing bank conflicts), the accesses will be serialized, thus decreasing the effective bandwidth.
@@ -126,7 +130,7 @@ s[Output].bind(Output.op.axis[1], block_x)
 We test the average time cost of 1000 runs on GTX 1080, and compare with [depthwise_conv2d in tensorflow](https://www.tensorflow.org/versions/r0.12/api_docs/python/nn/convolution#depthwise_conv2d).
 Here is the result:
 
-| Input            | Filter         | stride | tf-1.2-cudnn SAME pad (us) | TVM SAME pad (us) |
+| Input            | Filter         | stride | tf-1.2 SAME pad (us) | TVM SAME pad (us) |
 |:----------------:|:--------------:|:------:|:------------------------:|:-----------------:|
 | [1, 256, 21, 21] | [256, 1, 3, 3] | [1, 1] | 16.1                     | 9.1               |
 | [1, 256, 32, 32] | [256, 1, 3, 3] | [1, 1] | 34.8                     | 14.5              |
@@ -155,7 +159,7 @@ s[Output].bind(bx, block_x)
 
 Here is the new result:
 
-| Input            | [blocking_h, blocking_w] | tf-1.2-cudnn SAME pad (us) | TVM SAME pad (us) |
+| Input            | [blocking_h, blocking_w] | tf-1.2 SAME pad (us) | TVM SAME pad (us) |
 |:----------------:|:------------------------:|:------------------------:|:-----------------:|
 | [1, 256, 64, 64] | [32, 32]                 | 130.9                    | 63.4              |
 | [1, 256, 96, 96] | [32, 32]                 | 251.6                    | 132.5             |
@@ -335,7 +339,7 @@ vthread saves additional 5us.
 
 In fact, TVM can be extremely faster than tensorflow with large kernel size or channel_multiplier (because of more filter reuse) :
 
-| Input            | Filter         | stride | tf-1.2-cudnn SAME pad (us) | TVM SAME pad (us) | How faster is TVM |
+| Input            | Filter         | stride | tf-1.2 SAME pad (us) | TVM SAME pad (us) | How faster is TVM |
 |:----------------:|:--------------:|:------:|:------------------------:|:-----------------:|:-----------------:|
 | [1, 256, 96, 96] | [256, 1, 3, 3] | [1, 1] | 251.6                    | 90.9              | 2.8x              |
 | [1, 256, 96, 96] | [256, 1, 5, 5] | [1, 1] | 597.6                    | 128.9             | 4.6x              |
@@ -395,8 +399,8 @@ produce Relu {
 As we can see, each thread computes `scale_shift` and `relu` before writing the result of `depthwise_conv2d` to global memory. The fused operator is as fast as single `depthwise_conv2d`.
 Below is the result with Input = [1, 256, 96, 96], Filter = [256, 1, 3, 3], stride = [1, 1], padding = 'SAME':
 
-- tf-1.2-cudnn `depthwise_conv2d`: 251.6 us
-- tf-1.2-cudnn `depthwise_conv2d` + `scale_shift` + `relu` (separate): 419.9 us
+- tf-1.2 `depthwise_conv2d`: 251.6 us
+- tf-1.2 `depthwise_conv2d` + `scale_shift` + `relu` (separate): 419.9 us
 - TVM `depthwise_conv2d`: 90.9 us
 - TVM `depthwise_conv2d + scale_shift + relu` (fused): 91.5 us
 
@@ -417,6 +421,8 @@ The author has many thanks to Tianqi Chen for his helpful advice and inspiring d
 He is experiencing a gap year after obtaining a bachelor's degree in electrical engineering from Beihang University.
 
 ## References
-[1] [http://norvig.com/21-days.html#answers](http://norvig.com/21-days.html#answers)
+[1] [Xception: Deep Learning with Depthwise Separable Convolutions](https://arxiv.org/abs/1610.02357)
 
-[2] [https://stackoverflow.com/available-amount-of-shared-memory-on-gpu](https://stackoverflow.com/questions/27532524/available-amount-of-shared-memory-on-gpu)
+[2] [MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications](https://arxiv.org/abs/1704.04861)
+
+[3] [Approximate timing for various operations on a typical PC](http://norvig.com/21-days.html#answers)
