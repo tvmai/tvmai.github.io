@@ -5,17 +5,21 @@ date:   2017-08-22
 author: Yuwei Hu
 ---
 
-Efficient deep learning operators are at the core of deep learning systems. This blog teaches you how to write efficient GPU operators with the help of [TVM](https://github.com/dmlc/tvm),
-an end to end tensor IR/DSL stack for deploying deep learning workloads to hardwares.
+Efficient deep learning operators are at the core of deep learning systems.
+Usually these operators are hard to optimize and require great efforts of HPC experts.
+[TVM](https://github.com/dmlc/tvm), an end to end tensor IR/DSL stack, makes this much easier.
 
-We use the depthwise convolution as an example, i.e. [topi.nn.depthwise_conv2d_nchw](http://docs.tvmlang.org/api/python/topi.html#topi.nn.depthwise_conv2d_nchw),
-that is 2x faster than tensorflow's hand crafted version. Below is the speed comparison with Input = [1, 1, 96, 96], Filter = [1, 1, 32, 32], stride = [1, 1], padding = 'SAME':
+This blog teaches you how to write high-performance GPU operator kernels with the help of TVM.
+We use depthwise convolution (i.e. [topi.nn.depthwise_conv2d_nchw](http://docs.tvmlang.org/api/python/topi.html#topi.nn.depthwise_conv2d_nchw)) as an example,
+and demonstrate how we can improve over the already hand optimized CUDA kernel in tensorflow.
+Our final version in TVM is 2x-4x faster than tf-1.2-cudnn under different workloads, and 3x-7x faster with operator fusion.
+Below is the result with Filter = [1, 1, 3, 3], stride = [1, 1], padding = 'SAME', tested on GTX1080:
 
 {:center: style="text-align: center"}
-![image](/images/depthconv_tutorial/tf_compare.png){: width="60%"}
+![image](/images/depthconv_tutorial/tf_compare.png){: width="95%"}
 {:center}
 
-## 1. Introduction to Depthwise Convolution
+## Introduction to Depthwise Convolution
 
 Depthwise convolution is an important building block of modern architectures, such as [Xception](https://arxiv.org/abs/1610.02357) and [MobileNet](https://arxiv.org/abs/1704.04861).
 It's an effective method to reduce the computation complexity of deep neural networks.
@@ -45,10 +49,10 @@ Output = tvm.compute(
     name='DepthwiseConv2d')
 ```
 
-## 2. General GPU Optimization Guidelines
+## General GPU Optimization Guidelines
 
 This part briefly talks about three concepts we should know when optimizing CUDA code: data reuse, shared memory and bank conflicts.
-It would be great if you already know them, then you may skip this part and go directly to part 3.
+It would be great if you already know them, then you may skip this part.
 
 ### Data Reuse
 In modern computing architectures, the cost of loading data from memory is much higher than doing a single floating point computation [1].
@@ -58,13 +62,13 @@ There are two forms of data reuse in depthwise convolution: filter reuse and inp
 Input reuse is realized through tiling, let's take 3x3 depthwise conv as an example:
 
 {:center}
-![image](/images/depthconv_tutorial/no_tiling.png){: width="80%"}
+![image](/images/depthconv_tutorial/no_tiling.png){: width="70%"}
 {:center}
 
 Without tiling, each thread computes 1 output element and loads 3x3 input data. 16 threads together have 9x16 loads.
 
 {:center}
-![image](/images/depthconv_tutorial/tiling.png){: width="80%"}
+![image](/images/depthconv_tutorial/tiling.png){: width="70%"}
 {:center}
 
 With tiling, each thread computes 2x2 output elements and loads 4x4 input data. 4 threads together have 16x4 loads.
@@ -84,27 +88,18 @@ Besides, too much shared memory allocated to one block limits the number of acti
 When using shared memory, we should try to avoid bank conflicts. Shared memory is divided into equally sized memory modules (banks) that can be accessed simultaneously,
 however, if multiple threads access the same memory bank (causing bank conflicts), the accesses will be serialized, thus decreasing the effective bandwidth.
 
+Shared memory banks are organized such that successive addresses are assigned to successive banks.
+To avoid bank conflicts, it's better that consecutive threads access consecutive memory addresses, as illustrated below:
+
+{:center}
+![image](/images/depthconv_tutorial/bank_conflicts.png){: width="95%"}
+{:center}
+
 For more details on shared memory and bank conflicts, please refer to [this Nvidia's blog](https://devblogs.nvidia.com/parallelforall/using-shared-memory-cuda-cc/).
-
-<!-- ### Coalesced Memory Access
-Coalesced memory access refers to that consecutive threads access consecutive memory addresses. Assume there are four threads, coalesced memory access is:
-
-{:center}
-![image](/images/depthconv_tutorial/coalesced.png){: width="80%"}
-{:center}
-
-Uncoalesced memory access is:
-
-{:center}
-![image](/images/depthconv_tutorial/uncoalesced.png){: width="80%"}
-{:center}
-
-When coalesced, multiple memory accesses (4 in above example) can be combined into a single transaction, therefore more efficient than uncoalesced.
-For more details on coalesced memory access, please refer to [this Cornell's tutorial](https://cvw.cac.cornell.edu/gpu/coalesced). -->
 
 Ok, now let's start optimizing depthwise convolution in TVM.
 
-## 3. Schedule Optimization
+## Schedule Optimization
 
 ### Compute PaddedInput Inline to Save Memory Allocation
 As we see from part 1, padding is declared explicitly as a separate stage. We compute it inline to avoid redundant memory allocation:
@@ -133,10 +128,10 @@ Here is the result:
 
 | Input            | Filter         | stride | tf-1.2-cudnn SAME pad (us) | TVM SAME pad (us) |
 |:----------------:|:--------------:|:------:|:------------------------:|:-----------------:|
-| [1, 256, 21, 21] | [256, 1, 3, 3] | [1, 1] | 13.5                     | 9.1               |
-| [1, 256, 32, 32] | [256, 1, 3, 3] | [1, 1] | 26.8                     | 14.5              |
-| [1, 256, 64, 64] | [256, 1, 3, 3] | [1, 1] | 94.7                     | 98.9              |
-| [1, 256, 96, 96] | [256, 1, 3, 3] | [1, 1] | 206.0                    | 387.4             |
+| [1, 256, 21, 21] | [256, 1, 3, 3] | [1, 1] | 16.1                     | 9.1               |
+| [1, 256, 32, 32] | [256, 1, 3, 3] | [1, 1] | 34.8                     | 14.5              |
+| [1, 256, 64, 64] | [256, 1, 3, 3] | [1, 1] | 130.9                    | 98.9              |
+| [1, 256, 96, 96] | [256, 1, 3, 3] | [1, 1] | 251.6                    | 387.4             |
 
 As we can see, this schedule performs well with small channel size like 21 x 21 or 32 x 32, however, its performance drops seriously as the channel size increases to larger than 64 x 64. One main reason is that too much shared memory allocated to one block limits the number of active blocks per multiprocessor.
 
@@ -161,8 +156,8 @@ Here is the new result:
 
 | Input            | [blocking_h, blocking_w] | tf-1.2-cudnn SAME pad (us) | TVM SAME pad (us) |
 |:----------------:|:------------------------:|:------------------------:|:-----------------:|
-| [1, 256, 64, 64] | [32, 32]                 | 94.7                     | 63.4              |
-| [1, 256, 96, 96] | [32, 32]                 | 206.0                    | 132.5             |
+| [1, 256, 64, 64] | [32, 32]                 | 130.9                    | 63.4              |
+| [1, 256, 96, 96] | [32, 32]                 | 251.6                    | 132.5             |
 
 Our blocking strategy works! For 64 x 64 channel size, it brings 1.6x acceleration (98.9us -> 63.4us); for 96 x 96 channel size, it brings 2.9x acceleration (387.4us -> 132.5us).
 
@@ -204,8 +199,8 @@ It has better data reuse than case 1's 4x1 tile.
 To summarize what we learn from above observations:
 
 - Large tile is good for data reuse, but not good for local memory read.
-- The influence of `num_thread_y` and `num_thread_x` on bank conflics is asymmetric.
-- To find the optimal combination of `num_thread_y` and `num_thread_x` is to achieve a balance of shared memory access (avoid bank conflicts), data reuse, and local memory read.
+- The influence of `num_thread_y` and `num_thread_x` on bank conflicts is asymmetric.
+- To find the optimal combination of `num_thread_y` and `num_thread_x` is to achieve a balance of efficient shared memory access (avoid bank conflicts), data reuse, and local memory read.
 
 Pretty tricky. So, what exactly should we do to find the optimal combination? The answer is brute force search. 
 We can pass `num_thread_y` and `num_thread_x` as arguments to the schedule function, and try all possible combinations to find the optimal one. This can be done easily in TVM:
@@ -325,31 +320,31 @@ table th:nth-of-type(2) {
 | 3    | [1, 256, 96, 96] | 4, 32                      | 1, 1                         | 95.9              |
 | 4    | [1, 256, 96, 96] | 8, 16                      | 1, 2                         | 90.9              |
 
-Case 2 is faster than case 1. It's because in case 2 `num_thread_x=8` and `num_vthread_x=4` together brings coalesced memory access, as illustrated below
-(each color represents the workload of one thread):
+Case 2 is faster than case 1. It's because in case 2 `num_thread_x=8` and `num_vthread_x=4` together ensures that consecutive threads access consecutive memory addresses,
+thus avoiding bank conflicts, as illustrated below (each color represents one thread's workload):
 
 {:center}
 ![image](/images/depthconv_tutorial/vthread_and_strided_pattern.png){: width="90%"}
 {:center}
 
-In theory case 3 4 should be the same fast, since they have the same workload per thread, and both enjoy coalesced memory access. Somehow case 4 is just a little faster.
+In theory case 3 4 should be the same fast, since they have the same workload per thread, and both enjoy efficient shared memory access. Somehow case 4 is just a little faster.
 
-Still remember tensorflow's speed? It's 206.0us, and now TVM is 2.3x faster. 387.4 -> 132.5 -> 95.9 -> 90.9, blocking helps the most; tuning thread numbers saves 37us;
+Still remember tensorflow's speed? It's 251.6us, and now TVM is 2.8x faster. 387.4 -> 132.5 -> 95.9 -> 90.9, blocking helps the most; tuning thread numbers saves 37us;
 vthread saves additional 5us.
 
 In fact, TVM can be extremely faster than tensorflow with large kernel size or channel_multiplier (because of more filter reuse) :
 
 | Input            | Filter         | stride | tf-1.2-cudnn SAME pad (us) | TVM SAME pad (us) | How faster is TVM |
 |:----------------:|:--------------:|:------:|:------------------------:|:-----------------:|:-----------------:|
-| [1, 256, 96, 96] | [256, 1, 3, 3] | [1, 1] | 206.0                    | 90.9              | 2.3x              |
+| [1, 256, 96, 96] | [256, 1, 3, 3] | [1, 1] | 251.6                    | 90.9              | 2.8x              |
 | [1, 256, 96, 96] | [256, 1, 5, 5] | [1, 1] | 597.6                    | 128.9             | 4.6x              |
 | [1, 256, 96, 96] | [256, 2, 3, 3] | [1, 1] | 659.9                    | 143.7             | 4.6x              |
 | [1, 256, 96, 96] | [256, 2, 5, 5] | [1, 1] | 1203.9                   | 170.5             | 7.1x              |
  
 ## 3. Operator Fusion
 
-One typical optimization that we can do in deep learning is operator fusion, that computes multiple operators together in a single kernel without saving back to global memory.
-TVM support that out of the box.
+One typical optimization we can do in deep learning is operator fusion, that computes multiple operators together in a single kernel without saving intermediate results back to global memory.
+TVM supports that out of the box.
 
 Consider a common pattern in neural networks: `depthwise_conv2d` + `scale_shift` + `relu`. We can fuse the three operators into one, by slightly modifying the original schedule:
 
@@ -399,8 +394,8 @@ produce Relu {
 As we can see, each thread computes `scale_shift` and `relu` before writing the result of `depthwise_conv2d` to global memory. The fused operator is as fast as single `depthwise_conv2d`.
 Below is the result with Input = [1, 256, 96, 96], Filter = [256, 1, 3, 3], stride = [1, 1], padding = 'SAME':
 
-- tf-1.2-cudnn `depthwise_conv2d`: 206.0 us
-- tf-1.2-cudnn `depthwise_conv2d` + `scale_shift` + `relu` (separate): 465.2 us
+- tf-1.2-cudnn `depthwise_conv2d`: 251.6 us
+- tf-1.2-cudnn `depthwise_conv2d` + `scale_shift` + `relu` (separate): 419.9 us
 - TVM `depthwise_conv2d`: 90.9 us
 - TVM `depthwise_conv2d + scale_shift + relu` (fused): 91.5 us
 
