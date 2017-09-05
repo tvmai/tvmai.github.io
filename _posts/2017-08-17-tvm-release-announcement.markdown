@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "TVM: An End to End IR Stack for Deploying the Deep Learning Workloads to Hardwares"
+title:  "TVM: An End to End IR Stack for Deploying Deep Learning Workloads on Hardware Platforms"
 date:   2017-08-17 12:00:00 -0700
 ---
 
@@ -151,7 +151,7 @@ TVM started as a research project of Paul G. Allen School Computer Science and E
 ## Acknowledgement
 This project wouldn’t become possible without our early contributors. We would like to thank Yizhi Liu(Qihoo 360), Yuwei Hu(TuSimple),
 Xingjian Shi(HKUST), Leyuan Wang(AWS/UCDavis), Nicolas Vasilache(Facebook), Jian Weng(UCLA), Weitang Liu(AWS/UCDavis), Edward Z. Yang(Facebook),
-Lianmin Zheng(SJTU), Qiao Zhang(UW), William Moses(Facebook/MIT) and Hu Shiwen. The author would also like to thank Xianyi Zhang for helpful discussions.
+Lianmin Zheng(SJTU), Qiao Zhang(UW), William Moses(Facebook/MIT) and Hu Shiwen. The author would also like to thank Xianyi Zhang(PerfXLab) for helpful discussions.
 
 
 ## Source code
