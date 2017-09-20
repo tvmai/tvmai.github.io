@@ -153,6 +153,13 @@ This project wouldn’t become possible without our early contributors. We would
 Xingjian Shi(HKUST), Leyuan Wang(AWS/UCDavis), Nicolas Vasilache(Facebook), Jian Weng(UCLA), Weitang Liu(AWS/UCDavis), Edward Z. Yang(Facebook),
 Lianmin Zheng(SJTU), Qiao Zhang(UW), William Moses(Facebook/MIT) and Hu Shiwen. The author would also like to thank Xianyi Zhang(PerfXLab) for helpful discussions.
 
+We also learnt a lot from the following projects when building TVM.
+- [Halide](https://github.com/halide/Halide): TVM uses [HalideIR](https://github.com/dmlc/HalideIR) as data structure for
+  arithematic simplification and low level lowering. HalideIR is derived from Halide.
+  We also learns from Halide when implementing the lowering pipeline in TVM.
+- [Loopy](https://github.com/inducer/loopy): use of integer set analysis and its loop transformation primitives.
+- [Theano](https://github.com/Theano/Theano): the design inspiration of symbolic scan operator for recurrence.
+
 
 ## Source code
 - Github page can be found here: [https://github.com/dmlc/tvm](https://github.com/dmlc/tvm)
