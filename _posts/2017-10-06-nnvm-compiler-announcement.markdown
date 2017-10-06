@@ -41,7 +41,7 @@ The CoreML frontend enables deployment of CoreML models to non-iOS devices.
 ![image](/images/nnvm/nnvm_deploy.png){: width="512px"}
 {:center}
 
-NNVM compiler applies graph level and tensor level optimizations and jointly optimize them to get the best performance. We take a different approach from existing deep learning frameworks, which packages the graph optimization with the deployment runtime.  NNVM compiler adopts the conventional wisdom from compiler to separates the optimization from the actual deployment runtime. This approach offers substantial optimization but still keeps the runtime lightweight. The compiled module only depend on a minimum TVM runtime that only takes around 300KB when deployed on a Raspberry Pi or mobile devices.
+NNVM compiler applies graph level and tensor level optimizations and jointly optimize them to get the best performance. We take a different approach from existing deep learning frameworks, which packages the graph optimization with the deployment runtime.  NNVM compiler adopts the conventional wisdom from compiler to separate the optimization from the actual deployment runtime. This approach offers substantial optimization but still keeps the runtime lightweight. The compiled module only depend on a minimum TVM runtime that only takes around 300KB when deployed on a Raspberry Pi or mobile devices.
 
 ## Performance
 
@@ -63,7 +63,7 @@ As can be seen, NNVM compiler generate code that outperforms MXNet on K80. These
 
 The Rasberry Pi compilation stack is contributed by Ziheng Jiang(AWS/FDU).
 We compared NNVM compiler against MXNet with OpenBLAS and NNPack.
-We explored the setups to get the best performance out of MXNet: we turned on Winograd convolution in the NNPACK for 3x3 convolutions, enabled multi-threading and disables the additional scheduler thread (so all threads are used by NNPack).
+We explored the setups to get the best performance out of MXNet: we turned on Winograd convolution in the NNPACK for 3x3 convolutions, enabled multi-threading and disabled the additional scheduler thread (so all threads are used by NNPack).
 
 {:center}
 ![image](/images/nnvm/nnvm_rasp_result.png){: width="400px"}
@@ -78,4 +78,3 @@ The gap on MobileNet is mainly due to lack of depthwise convolution in existing 
 - Github page of TVM: [https://github.com/dmlc/tvm](https://github.com/dmlc/tvm)
 - [UW Allen school blog about NNVM compiler](https://news.cs.washington.edu/2017/10/06/allen-school-and-aws-team-up-on-new-nnvm-compiler-for-deep-learning-frameworks/)
 - [AWS blogpost about NNVM compiler](https://aws.amazon.com/blogs/ai/introducing-nnvm-compiler-a-new-open-end-to-end-compiler-for-ai-frameworks/)
-
