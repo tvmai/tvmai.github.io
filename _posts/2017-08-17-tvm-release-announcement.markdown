@@ -163,6 +163,5 @@ We also learnt a lot from the following projects when building TVM.
 
 ## Source code
 - Github page can be found here: [https://github.com/dmlc/tvm](https://github.com/dmlc/tvm)
-- An example graph compilation toolchain based on TVM stack and MXNet will be contributed upstream to [Apache MXNet](http://mxnet.io/) next week.
 - TVM is [DLPack](https://github.com/dmlc/dlpack) compatible, which makes it easy to support frameworks
   that adopts the standard, such as MXNet, PyTorch, Caffe2 and tiny-dnn.

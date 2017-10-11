@@ -27,7 +27,7 @@ The reader is welcome to refer to the [original TVM announcement](http://www.tvm
 ![image](/images/nnvm/nnvm_compiler_stack.png){: width="612px"}
 {:center}
 
-The NNVM compiler can directly take models from deep learning frameworks such as  MXNet.
+The NNVM compiler can directly take models from deep learning frameworks such as Apache MXNet.
 It also support model exchange formats such as ONNX and CoreML. ONNX support enables NNVM to compile deep learning models from PyTorch, Caffe2 and CNTK.
 The CoreML frontend enables deployment of CoreML models to non-iOS devices.
 
@@ -46,23 +46,23 @@ NNVM compiler applies graph level and tensor level optimizations and jointly opt
 ## Performance
 
 NNVM compiler is still under active development, and we can expect more improvements to come, but we have started to see promising results.
-We benchmarked its performance and compared it against MXNet on two typical hardware configurations: ARM CPU on Raspberry PI and Nvidia GPU on AWS. Despite the radical architecture difference between these two chips, we can use the same infrastructure and only need to change the schedule for each type of hardware.
+We benchmarked its performance and compared it against Apache MXNet on two typical hardware configurations: ARM CPU on Raspberry PI and Nvidia GPU on AWS. Despite the radical architecture difference between these two chips, we can use the same infrastructure and only need to change the schedule for each type of hardware.
 
 ### Nvidia GPU
 
-GPU benchmarks and schedules are contributed by Leyuan Wang (AWS/UCDavis) and Yuwei Hu (TuSimple). We compared the NNVM compiler against MXNet with CUDA8 and cuDNN7 as the backend on Nvidia K80. This is a very strong baseline, as MXNet turns on auto-tuning to select the best kernel from CuDNN. We also used the optimized depthwise kernel in MXNet to optimize MobileNet workload.
+GPU benchmarks and schedules are contributed by Leyuan Wang (AWS/UCDavis) and Yuwei Hu (TuSimple). We compared the NNVM compiler against Apache MXNet with CUDA8 and cuDNN7 as the backend on Nvidia K80. This is a very strong baseline, as Apache MXNet turns on auto-tuning to select the best kernel from CuDNN. We also used the optimized depthwise kernel in MXNet to optimize MobileNet workload.
 
 {:center}
 ![image](/images/nnvm/nnvm_k80_result.png){: width="400px"}
 {:center}
 
 
-As can be seen, NNVM compiler generate code that outperforms MXNet on K80. These improvements are due to the joint graph level and kernel level optimizations. It is worth noting that NNVM compiler generates all the optimized GPU kernels on its own without relying on external libraries like CuDNN.
+As can be seen, NNVM compiler generate code that outperforms Apache MXNet on K80. These improvements are due to the joint graph level and kernel level optimizations. It is worth noting that NNVM compiler generates all the optimized GPU kernels on its own without relying on external libraries like CuDNN.
 
 ### Raspberry Pi 3b
 
 The Rasberry Pi compilation stack is contributed by Ziheng Jiang(AWS/FDU).
-We compared NNVM compiler against MXNet with OpenBLAS and NNPack.
+We compared NNVM compiler against Apache MXNet with OpenBLAS and NNPack.
 We explored the setups to get the best performance out of MXNet: we turned on Winograd convolution in the NNPACK for 3x3 convolutions, enabled multi-threading and disabled the additional scheduler thread (so all threads are used by NNPack).
 
 {:center}
@@ -78,6 +78,13 @@ This project wouldn’t become possible without our early contributors in the DM
 We would like to specially thank Yuwei Hu(TuSimple), Leyuan Wang(AWS/UCDavis), Joshua Z. Zhang(AWS)
 and Xingjian Shi(HKUST) for their early contributions to the project. We would also like to thank all the contributors
 to the TVM stack.
+
+We also learnt a lot from the following projects when building NNVM Compiler.
+- [Theano](https://github.com/Theano/Theano): possibly the earliest compiler for deep learning
+- [Halide](https://github.com/halide/Halide): TVM uses [HalideIR](https://github.com/dmlc/HalideIR) as data structure for
+  arithematic simplification and low level lowering. HalideIR is derived from Halide.
+  We also learns from Halide when implementing the lowering pipeline in TVM.
+- [Loopy](https://github.com/inducer/loopy): use of integer set analysis and its loop transformation primitives.
 
 ## Links
 - Github page of NNVM Compiler: [https://github.com/dmlc/nnvm](https://github.com/dmlc/nnvm)
