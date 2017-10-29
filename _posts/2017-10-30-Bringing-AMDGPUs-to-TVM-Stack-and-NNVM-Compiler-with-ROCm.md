@@ -69,7 +69,7 @@ x (1, 3, 224, 224)
 TVM prediction top-1: 282 tiger cat
 {% endhighlight %}
 
-The script [advanced_superres_onnx.py](https://github.com/adityaatluri/nnvm-rocm/blob/master/advanced_superres_onnx.py) gives an example of loading a model trained with PyTorch. The model is stored in the [ONNX](https://onnx.ai/) format. In this example, our network takes an low resolution image as input, and outputs a 4x high resolution image. We refer the details of a problem setup and the network architecture to [the original paper](https://arxiv.org/abs/1609.04802). The network has 35 convolutional layers, and thus it is far more complex than the simple 4 layer network in [NNVM's tutorial](http://nnvm.tvmlang.org/tutorials/from_onnx.html#sphx-glr-tutorials-from-onnx-py). Using the ONNX export interface in the latest Pytorch package, we exported a trained model available [here](https://github.com/twtygqyy/pytorch-SRResNet) to the ONNX format for use in this example. We thank the author of the repository for making his code and trained models publicly available.
+The script [advanced_superres_onnx.py](https://github.com/adityaatluri/nnvm-rocm/blob/master/advanced_superres_onnx.py) gives an example of loading a model trained with PyTorch. The model is stored in the [ONNX](https://onnx.ai/) format. In this example, our network takes an low resolution image as input, and outputs a 4x high resolution image. We refer the details of a problem setup and the network architecture to [the original paper](https://arxiv.org/abs/1609.04802). The network has 37 convolutional layers, and thus it is far more complex than the simple 4 layer network in [NNVM's tutorial](http://nnvm.tvmlang.org/tutorials/from_onnx.html#sphx-glr-tutorials-from-onnx-py). Using the ONNX export interface in the latest Pytorch package, we exported a trained model available [here](https://github.com/twtygqyy/pytorch-SRResNet) to the ONNX format for use in this example. We thank the author of the repository for making his code and trained models publicly available.
 
 
 In order to use models in the ONNX format with NNVM, we first use [the ONNX library](https://github.com/onnx/onnx) to load the ONNX model into the Protocol buffer object. We can then use ```nnvm.frontend.from_onnx(...)``` to obtain an equivalent NNVM graph. With a NNVM graph in hand, we can follow the generic workflow of compilation and graph execution outlined above.
@@ -102,7 +102,6 @@ We start by setting up a compute operation and a schedule for the vector add ker
 from __future__ import absolute_import, print_function
 import tvm
 import numpy as np
-
 
 n = tvm.var("n")
 A = tvm.placeholder((n,), name='A')
