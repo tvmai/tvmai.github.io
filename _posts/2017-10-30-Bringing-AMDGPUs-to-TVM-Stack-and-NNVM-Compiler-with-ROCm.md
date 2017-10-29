@@ -22,15 +22,11 @@ TVM stack is developed by an open source community under Apache-2.0 License. The
 
 ## ROCm stack
 
+Radeon Open Compute is open-source initiative by AMD to leverage compute power of current and future generation GPUs. ROCm software stack is a great tool to express and run most commonly used GPU programming models and achieve peak performance. Not only ROCm is an open-source stack, it is an open stack, which means all the ISA and hardware features are well documented and programmable by developers. Developers can experiment with different programming models and try out multiple ways to achieve peak throughput and bandwidth for their algorithm.
 
-Radeon Open Compute is open-source initiative by AMD to leverage compute power of current and future generation GPUs. ROCm software stack is great tool to express and run most commonly used GPU programming models and achieve peak performance. Not only ROCm is an open-source stack, it is an open stack, which means all the ISA and hardware features are well documented and programmable by developers. Which means developers can experiment with different programming models and try out multiple ways to achieve peak throughput and bandwidth for the algorithm.
+TVM leverages the open-source feature of ROCm stack by using LLVM AMDGPU backend code generator. TVM translates from its intermediate representation (IR) to LLVM intermediate representation. This is the place where ROCm stack open-source feature takes control. TVM’s LLVM AMDGPU CodeGen pass converts LLVM IR into GPU assembly and object code, which is later called to run the whole network or group of layers or single layer. 
 
-
-TVM leverages the open-source feature of ROCm stack by using LLVM AMDGPU backend code generator. TVM translates from its intermediate representation (IR) to LLVM intermediate representation. This the place where ROCm stack open-source feature takes control. TVM’s LLVM AMDGPU CodeGen pass converts LLVM IR into a GPU assembly and an object file, which is later called by user to run the whole network or group of layers or single layer. 
-
-
-The design decision went into choosing code generator for kernels is the flexibility and performance it gives. Which cannot be achieved by using standard gpu programming languages and the time it takes to trickle new architecture features to be visible to these programming models. On ROCm stack, there is no abstraction of ISA, you get what you ask for not less not more. Hence, one can schedule ops in kernel at a granularity of single amd gcn instruction without worrying about instruction reordering and other optimizations not asked for.
-
+On ROCm stack, there is no virtual ISA, you get what you ask for not less not more. Hence, one can schedule operations in a kernel at a granularity of a single instruction, without worrying about instruction reordering and other optimizations you do not ask for.
 
 ## Using NNVM Compiler with ROCm backend
 
@@ -43,10 +39,10 @@ Thanks to TVM stack, we can directly compile models from popular deep learning f
 
   
 
-We have put together working examples of compiling models from MXNet and PyTorch with NNVM, and running them on AMD GPUs with ROCm backend. The repository is available [here](https://github.com/adityaatluri/nnvm-rocm).
+We have put together working examples of compiling models from MXNet and PyTorch with NNVM, and running them on AMD GPUs with ROCm backend. The repository is available [here](https://github.com/ROCmSoftwarePlatform/nnvm-rocm).
 
 
-The script [mxnet_imagenet_inference.py](https://github.com/adityaatluri/nnvm-rocm/blob/master/mxnet_imagenet_inference.py) demonstrates Imagenet inference on AMD GPUs with recently introduced MXNet-Gluon model. It does the following:
+The script [mxnet_imagenet_inference.py](https://github.com/ROCmSoftwarePlatform/nnvm-rocm/blob/master/mxnet_imagenet_inference.py) demonstrates Imagenet inference on AMD GPUs with recently introduced MXNet-Gluon model. It does the following:
 
 - Loads Resnet 50 model from [the Gluon model zoo](https://mxnet.incubator.apache.org/versions/master/api/python/gluon/model_zoo.html) 
 - Converts Gluon Resnet 50 model to NNVM graph format, using ```nnvm.frontend.from_mxnet (...)```
@@ -69,7 +65,7 @@ x (1, 3, 224, 224)
 TVM prediction top-1: 282 tiger cat
 {% endhighlight %}
 
-The script [advanced_superres_onnx.py](https://github.com/adityaatluri/nnvm-rocm/blob/master/advanced_superres_onnx.py) gives an example of loading a model trained with PyTorch. The model is stored in the [ONNX](https://onnx.ai/) format. In this example, our network takes an low resolution image as input, and outputs a 4x high resolution image. We refer the details of a problem setup and the network architecture to [the original paper](https://arxiv.org/abs/1609.04802). The network has 37 convolutional layers, and thus it is far more complex than the simple 4 layer network in [NNVM's tutorial](http://nnvm.tvmlang.org/tutorials/from_onnx.html#sphx-glr-tutorials-from-onnx-py). Using the ONNX export interface in the latest Pytorch package, we exported a trained model available [here](https://github.com/twtygqyy/pytorch-SRResNet) to the ONNX format for use in this example. We thank the author of the repository for making his code and trained models publicly available.
+The script [advanced_superres_onnx.py](https://github.com/ROCmSoftwarePlatform/nnvm-rocm/blob/master/advanced_superres_onnx.py) gives an example of loading a model trained with PyTorch. The model is stored in the [ONNX](https://onnx.ai/) format. In this example, our network takes an low resolution image as input, and outputs a 4x high resolution image. We refer the details of a problem setup and the network architecture to [the original paper](https://arxiv.org/abs/1609.04802). The network has 37 convolutional layers, and thus it is far more complex than the simple 4 layer network in [NNVM's tutorial](http://nnvm.tvmlang.org/tutorials/from_onnx.html#sphx-glr-tutorials-from-onnx-py). Using the ONNX export interface in the latest Pytorch package, we exported a trained model available [here](https://github.com/twtygqyy/pytorch-SRResNet) to the ONNX format for use in this example. We thank the author of the repository for making his code and trained models publicly available.
 
 
 In order to use models in the ONNX format with NNVM, we first use [the ONNX library](https://github.com/onnx/onnx) to load the ONNX model into the Protocol buffer object. We can then use ```nnvm.frontend.from_onnx(...)``` to obtain an equivalent NNVM graph. With a NNVM graph in hand, we can follow the generic workflow of compilation and graph execution outlined above.

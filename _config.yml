@@ -18,7 +18,7 @@ author :
 
 #
 production_url : http://tvmlang.org
-future : true
+
 
 # All Jekyll-Bootstrap specific configurations are namespaced into this hash
 #
