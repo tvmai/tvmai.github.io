@@ -62,13 +62,12 @@ The example comes with an image of the following cat.
 
 Running our network, it predicts this image as “tigar cat”, among 1000 categories.
 
-```
+{% highlight python %}
 $ python mxnet_imagenet_inference.py 
 Testing model resnet50_v1
 x (1, 3, 224, 224)
 TVM prediction top-1: 282 tiger cat
-```
-
+{% endhighlight %}
 
 The script advanced_superres_onnx.py gives an example of loading a model trained with PyTorch. The model is stored in the ONNX format. In this example, our network takes an low resolution image as input, and outputs a 4x high resolution image. We refer the details of a problem setup and the network architecture to the original paper. The network has 35 convolutional layers, and thus it is far more complex than the simple 4 layer network in NNVM’s tutorial. Using the ONNX export interface in the latest Pytorch package, we exported a trained model available here to the ONNX format for use in this example. We thank the author of the repository for making his code and trained models publicly available.
 
@@ -99,7 +98,7 @@ In the following part of article we focus on explaining how to use ROCm backend 
 We start by setting up a compute operation and a schedule for the vector add kernel. This step is independent of a backend.
 
 
-```
+{% highlight python %}
 from __future__ import absolute_import, print_function
 import tvm
 import numpy as np
@@ -113,23 +112,23 @@ s = tvm.create_schedule(C.op)
 bx, tx = s[C].split(C.op.axis[0], factor=64)
 s[C].bind(bx, tvm.thread_axis("blockIdx.x"))
 s[C].bind(tx, tvm.thread_axis("threadIdx.x"))
-```
+{% endhighlight %}
 
 
 Next, to use ROCm backend we build our kernel under “rocm” target. This will cause TVM to use our new code generator. We also need a runtime context for ROCm backend. 
 
 
-```
+{% highlight python %}
 target = "rocm"
 fadd_rocm = tvm.build(s, [A, B, C], target, target_host="llvm", name="myadd")
 ctx = tvm.rocm(0)
-```
+{% endhighlight %}
 
 
 After building the kernel and setting up a runtime context, we can execute our vector add kernel.
 
 
-```
+{% highlight python %}
 n = 1024
 a = tvm.nd.array(np.random.uniform(size=n).astype(A.dtype), ctx)
 b = tvm.nd.array(np.random.uniform(size=n).astype(B.dtype), ctx)
@@ -138,22 +137,22 @@ c = tvm.nd.array(np.zeros(n, dtype=C.dtype), ctx)
 
 fadd_rocm(a, b, c)
 np.testing.assert_allclose(c.asnumpy(), a.asnumpy() + b.asnumpy())
-```
+{% endhighlight %}
 
 
 We can view LLVM IR that TVM generates in the following way:
 
 
-```
+{% highlight python %}
 dev_module = fadd_rocm.imported_modules[0]
 print(dev_module.get_source("llvm"))
-```
+{% endhighlight %}
 
 
 You should see something like this:
 
 
-```
+{% highlight LLVM %}
 ; ModuleID = 'myadd__kernel0'
 source_filename = "myadd__kernel0"
 target datalayout = "e-p:32:32-p1:64:64-p2:64:64-p3:32:32-p4:64:64-p5:32:32-i64:64-v16:16-v24:32-v32:32-v48:64-v96:128-v192:256-v256:256-v512:512-v1024:1024-v2048:2048-n32:64"
@@ -202,21 +201,20 @@ if_else:                                          ; preds = %entry
   %22 = icmp slt i32 %21, %20
   br i1 %22, label %if_end.sink.split, label %if_end, !prof !12
 }
-```
+{% endhighlight %}
 
 
 We can also view GCN assembly that ROCm backend generates. This is the real code that runs on your GPU.
 
 
-```
+{% highlight python %}
 print(dev_module.get_source("asm"))
-```
+{% endhighlight %}
 
 
 The assembly should look something like this, omitting unnecessary details:
 
-
-```
+{% highlight Plain Text %}
         s_load_dword s1, s[4:5], 0x18
         v_mov_b32_e32 v2, -1
         v_mov_b32_e32 v1, 0
@@ -269,10 +267,13 @@ BB0_5:
 BB0_6:
         s_or_b64 exec, exec, s[0:1]
         s_endpgm
-```
+{% endhighlight %}
 
 
 Links
-* Github page of NNVM Compiler: https://github.com/dmlc/nnvm
-* Github page of TVM: https://github.com/dmlc/tvm
-* Examples of ROCm backend with NNVM: https://github.com/adityaatluri/nnvm-rocm
+
+- Github page of NNVM Compiler: [https://github.com/dmlc/nnvm](https://github.com/dmlc/nnvm)
+
+- Github page of TVM: [https://github.com/dmlc/tvm](https://github.com/dmlc/tvm)
+
+- Examples of ROCm backend with NNVM: [https://github.com/adityaatluri/nnvm-rocm](https://github.com/adityaatluri/nnvm-rocm)
