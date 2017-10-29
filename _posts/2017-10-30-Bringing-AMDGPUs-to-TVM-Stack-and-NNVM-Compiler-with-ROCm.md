@@ -11,7 +11,7 @@ Aditya Atluri, Advanced Micro Devices, Inc.
 Masahiro Masuda, Ziosoft, Inc.
 {:center}
 
-We are pleased to announce a new GPU backend for TVM stack - ROCm backend for AMD GPUs. If you are not familiar with TVM, you can refer to the earlier announcement first. In short, TVM stack is an end to end compilation stack to deploy deep learning workloads to all hardware backends. Today's announcement focuses on the code generator support for AMD GPUs. Specifically, we developed a new GPU code generator for AMD GPUs. It compiles a high level computation description written in TVM frontend down to an optimized native GPU code. It achieves this using existing LLVM code generator in TVM and LLVM's AMDGPU backend.  We have also built a ROCm runtime for TVM to support native deployment of compiled ROCm modules. Thanks to the NNVM compiler support of TVM stack, we can now directly compile descriptions from deep learning frameworks and compile them to bare metal code that runs on AMD GPUs.
+We are pleased to announce a new GPU backend for TVM stack - ROCm backend for AMD GPUs. If you are not familiar with TVM, you can refer to [the earlier announcement](http://tvmlang.org/2017/08/17/tvm-release-announcement.html) first. In short, TVM stack is an end to end compilation stack to deploy deep learning workloads to all hardware backends. Today's announcement focuses on the code generator support for AMD GPUs. Specifically, we developed a new GPU code generator for AMD GPUs. It compiles a high level computation description written in TVM frontend down to an optimized native GPU code. It achieves this using existing LLVM code generator in TVM and LLVM's AMDGPU backend.  We have also built a ROCm runtime for TVM to support native deployment of compiled ROCm modules. Thanks to [the NNVM compiler](http://tvmlang.org/2017/10/06/nnvm-compiler-announcement.html) support of TVM stack, we can now directly compile descriptions from deep learning frameworks and compile them to bare metal code that runs on AMD GPUs.
 
 {:center: style="text-align: center"}
 ![image](/images/rocm/tvm_rocm_overview.png){: width="90%"}
@@ -43,12 +43,12 @@ Thanks to TVM stack, we can directly compile models from popular deep learning f
 
   
 
-We have put together working examples of compiling models from MXNet and PyTorch with NNVM, and running them on AMD GPUs with ROCm backend. The repository is available here.
+We have put together working examples of compiling models from MXNet and PyTorch with NNVM, and running them on AMD GPUs with ROCm backend. The repository is available [here](https://github.com/adityaatluri/nnvm-rocm).
 
 
-The script mxnet_imagenet_inference.py demonstrates Imagenet inference on AMD GPUs with recently introduced MXNet-Gluon model. It does the following:
+The script [mxnet_imagenet_inference.py](https://github.com/adityaatluri/nnvm-rocm/blob/master/mxnet_imagenet_inference.py) demonstrates Imagenet inference on AMD GPUs with recently introduced MXNet-Gluon model. It does the following:
 
-- Loads Resnet 50 model from the Gluon model zoo 
+- Loads Resnet 50 model from [the Gluon model zoo](https://mxnet.incubator.apache.org/versions/master/api/python/gluon/model_zoo.html) 
 - Converts Gluon Resnet 50 model to NNVM graph format, using ```nnvm.frontend.from_mxnet (...)```
 - Compiles and executes the graph with ROCm backend
 
@@ -62,17 +62,17 @@ The example comes with an image of the following cat.
 
 Running our network, it predicts this image as “tigar cat”, among 1000 categories.
 
-{% highlight python %}
+{% highlight Plain Text %}
 $ python mxnet_imagenet_inference.py 
 Testing model resnet50_v1
 x (1, 3, 224, 224)
 TVM prediction top-1: 282 tiger cat
 {% endhighlight %}
 
-The script advanced_superres_onnx.py gives an example of loading a model trained with PyTorch. The model is stored in the ONNX format. In this example, our network takes an low resolution image as input, and outputs a 4x high resolution image. We refer the details of a problem setup and the network architecture to the original paper. The network has 35 convolutional layers, and thus it is far more complex than the simple 4 layer network in NNVM’s tutorial. Using the ONNX export interface in the latest Pytorch package, we exported a trained model available here to the ONNX format for use in this example. We thank the author of the repository for making his code and trained models publicly available.
+The script [advanced_superres_onnx.py](https://github.com/adityaatluri/nnvm-rocm/blob/master/advanced_superres_onnx.py) gives an example of loading a model trained with PyTorch. The model is stored in the [ONNX](https://onnx.ai/) format. In this example, our network takes an low resolution image as input, and outputs a 4x high resolution image. We refer the details of a problem setup and the network architecture to [the original paper](https://arxiv.org/abs/1609.04802). The network has 35 convolutional layers, and thus it is far more complex than the simple 4 layer network in [NNVM's tutorial](http://nnvm.tvmlang.org/tutorials/from_onnx.html#sphx-glr-tutorials-from-onnx-py). Using the ONNX export interface in the latest Pytorch package, we exported a trained model available [here](https://github.com/twtygqyy/pytorch-SRResNet) to the ONNX format for use in this example. We thank the author of the repository for making his code and trained models publicly available.
 
 
-In order to use models in the ONNX format with NNVM, we first use the ONNX library to load the ONNX model into the Protocol buffer object. We can then use ```nnvm.frontend.from_onnx(...)``` to obtain an equivalent NNVM graph. With a NNVM graph in hand, we can follow the generic workflow of compilation and graph execution outlined above.
+In order to use models in the ONNX format with NNVM, we first use [the ONNX library](https://github.com/onnx/onnx) to load the ONNX model into the Protocol buffer object. We can then use ```nnvm.frontend.from_onnx(...)``` to obtain an equivalent NNVM graph. With a NNVM graph in hand, we can follow the generic workflow of compilation and graph execution outlined above.
 
 {:center: style="text-align: center"}
 ![image](/images/rocm/butterfly.png)
@@ -81,18 +81,18 @@ In order to use models in the ONNX format with NNVM, we first use the ONNX libra
 The input to the network is a 64 x 64 image on the left, and it outputs a 256 x 256 image on the right. On the middle is a 256 x 256 image obtained simply by resizing the input image with bicubic interpolation. The network outputs an image of far better quality. 
 
 
-The input images are taken from the original paper, and they are available here.
+The input images are taken from the original paper, and they are available [here](https://twitter.app.box.com/s/lcue6vlrd01ljkdtdkhmfvk7vtjhetog).
                                                                          
 ## A Note on performance
 
 
-The current support on ROCm focuses on the functionality coverage. We have already seen promising performance results by simply adopting existing TVM schedules for CUDA backend. For example, you can try running the gemm test script in TVM repository and see the result. For two types of cards we tested, the current gemm recipe for square matrix multiplication (not yet specifically optimized for AMD GPUs) already achieves 60% to 65% of peak performance. We are starting to look at performance optimization and we expect more improvement to come. 
+The current support on ROCm focuses on the functionality coverage. We have already seen promising performance results by simply adopting existing TVM schedules for CUDA backend. For example, you can try running [the gemm test script](https://github.com/dmlc/tvm/blob/master/topi/recipe/gemm/cuda_gemm_square.py) in TVM repository and see the result. For two types of cards we tested, the current gemm recipe for square matrix multiplication (not yet specifically optimized for AMD GPUs) already achieves 60% to 65% of peak performance. We are starting to look at performance optimization and we expect more improvement to come. 
 
 
 ## Walkthrough of ROCm backend
 
 
-In the following part of article we focus on explaining how to use ROCm backend when working with TVM directly. All you need to do is to build your TVM function under the target “rocm” and create a runtime context for it. Here, we show an example of ROCm backend usage, following ‘Vector Add Example’ in TVM’s getting started tutorial.
+In the following part of article we focus on explaining how to use ROCm backend when working with TVM directly. All you need to do is to build your TVM function under the target “rocm” and create a runtime context for it. Here, we show an example of ROCm backend usage, following ‘Vector Add Example’ in TVM’s [getting started tutorial](http://docs.tvmlang.org/tutorials/get_started.html#vector-add-example).
 
 
 We start by setting up a compute operation and a schedule for the vector add kernel. This step is independent of a backend.
@@ -133,7 +133,6 @@ n = 1024
 a = tvm.nd.array(np.random.uniform(size=n).astype(A.dtype), ctx)
 b = tvm.nd.array(np.random.uniform(size=n).astype(B.dtype), ctx)
 c = tvm.nd.array(np.zeros(n, dtype=C.dtype), ctx)
-
 
 fadd_rocm(a, b, c)
 np.testing.assert_allclose(c.asnumpy(), a.asnumpy() + b.asnumpy())
@@ -273,7 +272,5 @@ BB0_6:
 Links
 
 - Github page of NNVM Compiler: [https://github.com/dmlc/nnvm](https://github.com/dmlc/nnvm)
-
 - Github page of TVM: [https://github.com/dmlc/tvm](https://github.com/dmlc/tvm)
-
 - Examples of ROCm backend with NNVM: [https://github.com/adityaatluri/nnvm-rocm](https://github.com/adityaatluri/nnvm-rocm)
