@@ -17,7 +17,7 @@ We are pleased to announce a new GPU backend for TVM stack - ROCm backend for AM
 ![image](/images/rocm/tvm_rocm_overview.png){: width="90%"}
 {:center}
 
-TVM stack is developed by an open source community under Apache-2.0 License. The ROCm backend support is done with the help from community. Aditya first implemented codegen and runtime. He was later joined by Masahiro. Masahiro’s full time job is not related to TVM or AMD GPUs. Nonetheless, TVM got him excited and he has been involved in fixing bugs, resolving all failing unittests, and adding math function support to codegen.
+TVM stack is developed by an open source community under Apache-2.0 License. ROCm backend support is done with the help from community. Aditya first implemented codegen and runtime. He was later joined by Masahiro. Masahiro’s full time job is not related to TVM or AMD GPUs. Nonetheless, TVM got him excited and he has been involved in fixing bugs, resolving all failing unittests, and adding math function support to codegen.
 
 
 ## ROCm stack
@@ -39,7 +39,7 @@ Thanks to TVM stack, we can directly compile models from popular deep learning f
 
   
 
-We have put together working examples of compiling models from MXNet and PyTorch with NNVM, and running them on AMD GPUs with ROCm backend. The repository is available [here](https://github.com/ROCmSoftwarePlatform/nnvm-rocm).
+We have put together working examples of compiling models from MXNet and PyTorch with NNVM, and running them on AMD GPUs with ROCm backend. More frameworks are supported via the NNVM compiler stack. The repository is available [here](https://github.com/ROCmSoftwarePlatform/nnvm-rocm).
 
 
 The script [mxnet_imagenet_inference.py](https://github.com/ROCmSoftwarePlatform/nnvm-rocm/blob/master/mxnet_imagenet_inference.py) demonstrates Imagenet inference on AMD GPUs with recently introduced MXNet-Gluon model. It does the following:
@@ -82,13 +82,13 @@ The input images are taken from the original paper, and they are available [here
 ## A Note on performance
 
 
-The current support on ROCm focuses on the functionality coverage. We have already seen promising performance results by simply adopting existing TVM schedules for CUDA backend. For example, you can try running [the gemm test script](https://github.com/dmlc/tvm/blob/master/topi/recipe/gemm/cuda_gemm_square.py) in TVM repository and see the result. For two types of cards we tested, the current gemm recipe for square matrix multiplication (not yet specifically optimized for AMD GPUs) already achieves 60% to 65% of peak performance. We are starting to look at performance optimization and we expect more improvement to come. 
+The current support on ROCm focuses on the functionality coverage. We have already seen promising performance results by simply adopting existing TVM schedules for CUDA backend. For example, you can try running [the gemm test script](https://github.com/dmlc/tvm/blob/master/topi/recipe/gemm/cuda_gemm_square.py) in the TVM repository and see the result. For two types of cards we tested, the current gemm recipe for square matrix multiplication (not yet specifically optimized for AMD GPUs) already achieves 60% to 65% of peak performance. We are starting to look at performance optimization and we expect more improvement to come. 
 
 
 ## Walkthrough of ROCm backend
 
 
-In the following part of article we focus on explaining how to use ROCm backend when working with TVM directly. All you need to do is to build your TVM function under the target “rocm” and create a runtime context for it. Here, we show an example of ROCm backend usage, following ‘Vector Add Example’ in TVM’s [getting started tutorial](http://docs.tvmlang.org/tutorials/get_started.html#vector-add-example).
+In the following part of this article we focus on explaining how to use ROCm backend when working with TVM directly. All you need to do is to build your TVM function under the target “rocm” and create a runtime context for it. Here, we show an example of ROCm backend usage, following ‘Vector Add Example’ in TVM’s [getting started tutorial](http://docs.tvmlang.org/tutorials/get_started.html#vector-add-example).
 
 
 We start by setting up a compute operation and a schedule for the vector add kernel. This step is independent of a backend.
@@ -120,7 +120,7 @@ ctx = tvm.rocm(0)
 {% endhighlight %}
 
 
-After building the kernel and setting up a runtime context, we can execute our vector add kernel.
+After building the kernel and setting up a runtime context, we can launch our vector add kernel.
 
 
 {% highlight python %}
@@ -198,7 +198,7 @@ if_else:                                          ; preds = %entry
 {% endhighlight %}
 
 
-We can also view GCN assembly that ROCm backend generates. This is the real code that runs on your GPU.
+We can also view GPU assembly that ROCm backend generates. This is the real code that runs on your GPU.
 
 
 {% highlight python %}
@@ -268,4 +268,4 @@ Links
 
 - Github page of NNVM Compiler: [https://github.com/dmlc/nnvm](https://github.com/dmlc/nnvm)
 - Github page of TVM: [https://github.com/dmlc/tvm](https://github.com/dmlc/tvm)
-- Examples of ROCm backend with NNVM: [https://github.com/adityaatluri/nnvm-rocm](https://github.com/adityaatluri/nnvm-rocm)
+- Examples of ROCm backend with NNVM: [https://github.com/ROCmSoftwarePlatform/nnvm-rocm](https://github.com/ROCmSoftwarePlatform/nnvm-rocm)
