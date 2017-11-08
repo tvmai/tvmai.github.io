@@ -24,33 +24,33 @@ TVM stack is developed by an open source community under Apache-2.0 License. ROC
 
 Radeon Open Compute is open-source initiative by AMD to leverage compute power of current and future generation GPUs. ROCm software stack is a great tool to express and run most commonly used GPU programming models and achieve peak performance. Not only ROCm is an open-source stack, it is an open stack, which means all the ISA and hardware features are well documented and programmable by developers. Developers can experiment with different programming models and try out multiple ways to achieve peak throughput and bandwidth for their algorithm.
 
-TVM leverages the open-source feature of ROCm stack by using LLVM AMDGPU backend code generator. TVM translates from its intermediate representation (IR) to LLVM intermediate representation. This is the place where ROCm stack open-source feature takes control. TVM’s LLVM AMDGPU CodeGen pass converts LLVM IR into GPU assembly and object code, which is later called to run the whole network or group of layers or single layer. 
+TVM leverages the open-source feature of ROCm stack by using LLVM AMDGPU backend code generator. TVM translates from its intermediate representation (IR) to LLVM intermediate representation. This is the place where ROCm stack open-source feature takes control. TVM’s LLVM AMDGPU CodeGen pass converts LLVM IR into GPU assembly and object code, which is later called to run the whole network or group of layers or single layer.
 
 On ROCm stack, there is no virtual ISA, you get what you ask for not less not more. Hence, one can schedule operations in a kernel at a granularity of a single instruction, without worrying about instruction reordering and other optimizations you do not ask for.
 
 ## Using NNVM Compiler with ROCm backend
 
 
-Thanks to TVM stack, we can directly compile models from popular deep learning frameworks such as MXNet and PyTorch into AMD GPU assembly using NNVM compiler, today. With ROCm backend, the generic workflow becomes as follows. 
+Thanks to TVM stack, we can directly compile models from popular deep learning frameworks such as MXNet and PyTorch into AMD GPU assembly using NNVM compiler, today. With ROCm backend, the generic workflow becomes as follows.
 
 {:center: style="text-align: center"}
 ![image](/images/rocm/rocm_workflow.png){: width="90%"}
 {:center}
 
-  
+
 
 We have put together working examples of compiling models from MXNet and PyTorch with NNVM, and running them on AMD GPUs with ROCm backend. More frameworks are supported via the NNVM compiler stack. The repository is available [here](https://github.com/ROCmSoftwarePlatform/nnvm-rocm).
 
 
 The script [mxnet_imagenet_inference.py](https://github.com/ROCmSoftwarePlatform/nnvm-rocm/blob/master/mxnet_imagenet_inference.py) demonstrates Imagenet inference on AMD GPUs with recently introduced MXNet-Gluon model. It does the following:
 
-- Loads Resnet 50 model from [the Gluon model zoo](https://mxnet.incubator.apache.org/versions/master/api/python/gluon/model_zoo.html) 
+- Loads Resnet 50 model from [the Gluon model zoo](https://mxnet.incubator.apache.org/versions/master/api/python/gluon/model_zoo.html)
 - Converts Gluon Resnet 50 model to NNVM graph format, using ```nnvm.frontend.from_mxnet (...)```
 - Compiles and executes the graph with ROCm backend
 
 
-The example comes with an image of the following cat. 
-  
+The example comes with an image of the following cat.
+
 {:center: style="text-align: center"}
 ![image](/images/rocm/cat.png)
 {:center}
@@ -59,7 +59,7 @@ The example comes with an image of the following cat.
 Running our network, it predicts this image as “tigar cat”, among 1000 categories.
 
 {% highlight Plain Text %}
-$ python mxnet_imagenet_inference.py 
+$ python mxnet_imagenet_inference.py
 Testing model resnet50_v1
 x (1, 3, 224, 224)
 TVM prediction top-1: 282 tiger cat
@@ -74,15 +74,18 @@ In order to use models in the ONNX format with NNVM, we first use [the ONNX libr
 ![image](/images/rocm/butterfly.png)
 {:center}
 
-The input to the network is a 64 x 64 image on the left, and it outputs a 256 x 256 image on the right. On the middle is a 256 x 256 image obtained simply by resizing the input image with bicubic interpolation. The network outputs an image of far better quality. 
+The input to the network is a 64 x 64 image on the left, and it outputs a 256 x 256 image on the right. On the middle is a 256 x 256 image obtained simply by resizing the input image with bicubic interpolation. The network outputs an image of far better quality.
 
 
 The input images are taken from the original paper, and they are available [here](https://twitter.app.box.com/s/lcue6vlrd01ljkdtdkhmfvk7vtjhetog).
-                                                                         
+
 ## A Note on performance
 
 
-The current support on ROCm focuses on the functionality coverage. We have already seen promising performance results by simply adopting existing TVM schedules for CUDA backend. For example, you can try running [the gemm test script](https://github.com/dmlc/tvm/blob/master/topi/recipe/gemm/cuda_gemm_square.py) in the TVM repository and see the result. For two types of cards we tested, the current gemm recipe for square matrix multiplication (not yet specifically optimized for AMD GPUs) already achieves 60% to 65% of peak performance. We are starting to look at performance optimization and we expect more improvement to come. 
+The current support on ROCm focuses on the functionality coverage. We have already seen promising performance results by simply adopting existing TVM schedules for CUDA backend. For example, you can try running [the gemm test script](https://github.com/dmlc/tvm/blob/master/topi/recipe/gemm/cuda_gemm_square.py) in the TVM repository and see the result. For two types of cards we tested, the current gemm recipe for square matrix multiplication (not yet specifically optimized for AMD GPUs) already achieves 60% to 65% of peak performance.
+This is already a promising start, as it is very hard to optimize performance to get to peak and we
+did not yet apply AMD GPU specific optimizations.
+We are starting to look at performance optimization and we expect more improvement to come.
 
 
 ## Walkthrough of ROCm backend
@@ -110,7 +113,7 @@ s[C].bind(tx, tvm.thread_axis("threadIdx.x"))
 {% endhighlight %}
 
 
-Next, to use ROCm backend we build our kernel under “rocm” target. This will cause TVM to use our new code generator. We also need a runtime context for ROCm backend. 
+Next, to use ROCm backend we build our kernel under “rocm” target. This will cause TVM to use our new code generator. We also need a runtime context for ROCm backend.
 
 
 {% highlight python %}

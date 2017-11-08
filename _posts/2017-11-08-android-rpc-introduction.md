@@ -1,19 +1,22 @@
 ---
 layout: post
-title:  "Remote Profile and Test Computation Workloads on Mobile Phones"
+title:  "Remote Profile and Test Deep Learning Cross Compilation on Mobile Phones with TVM RPC"
 date:   2017-11-08
 author: Yizhi Liu
 ---
 
-TVM is an end-to-end computation compiler for deep learning frameworks. An impressive feature is its ability to deploy computation workloads on different platforms, such as GPUs and mobile phones (will support more hardward backends, such as FPGA devices, in future).
+TVM stack is an end to end compilation stack to deploy deep learning workloads to all hardware backends.
+Thanks to the NNVM compiler support of TVM stack, we can now directly compile descriptions from deep learning frameworks and compile them to bare metal code.
+An impressive feature OF tvm is its ability to deploy computation workloads on different platforms, such as GPUs and mobile phones (will support more hardward backends).
 
-Typically it is hard to test different computation workloads on a heterogeneous device. In order to optimize a computation task, one has to edit the code on the development PC, compile, deploy to the device, test, then modify the codes again to see whether it accelerates. The workflow looks like,
+However, when we want to test and profile cross compilation, it is hard to test different computation workloads on a heterogeneous device such as raspberry pi or a mobile phone.
+In order to optimize a computation task, one has to edit the code on the development PC, compile, deploy to the device, test, then modify the codes again to see whether it accelerates. The workflow looks like,
 
 {:center: style="text-align: center"}
 ![image](/images/android_rpc/flow1.png){: width="50%"}
 {:center}
 
-Is there any way to speed up this process? 
+Is there any way to speed up this process?
 
 Today we introduce an approach to deploy and test TVM workloads on Android Phones. We develop a TVM runtime for Java and build an Android APP upon it. The Android APP takes shared library as input and runs compiled functions on the mobile phone. Thus our workflow simplifies to,
 
@@ -21,7 +24,7 @@ Today we introduce an approach to deploy and test TVM workloads on Android Phone
 ![image](/images/android_rpc/flow2.png){: width="50%"}
 {:center}
 
-With the help of the TVM RPC, one can build TVM functions and NDArrays on a remote device. The ability to cross-compile to different platforms makes it easy to develop on one platform and test on another. 
+With the help of the TVM RPC, one can build TVM functions and NDArrays on a remote device. The ability to cross-compile to different platforms makes it easy to develop on one platform and test on another.
 
 The process is illustrated as following:
 
@@ -102,7 +105,7 @@ There's nothing special except the last line. Here we set the target to 'opencl'
 
 ```bash
 $ adb shell
-shell@zenltechn:/ $ cat /proc/cpuinfo                                          
+shell@zenltechn:/ $ cat /proc/cpuinfo
 Processor	: AArch64 Processor rev 2 (aarch64)
 processor	: 0
 processor	: 1
@@ -112,7 +115,7 @@ processor	: 4
 processor	: 5
 processor	: 6
 processor	: 7
-Features	: fp asimd aes pmull sha1 sha2 crc32 
+Features	: fp asimd aes pmull sha1 sha2 crc32
 CPU implementer	: 0x41
 CPU architecture: AArch64
 CPU variant	: 0x0
@@ -120,7 +123,7 @@ CPU part	: 0xd03
 CPU revision	: 2
 
 Hardware	: SAMSUNG Exynos7420
-``` 
+```
 
 Please refer to [target triple](https://clang.llvm.org/docs/CrossCompilation.html#target-triple) to learn the compile options for LLVM.
 
@@ -216,12 +219,12 @@ public class LoadAddFunc {
     Module fadd = Module.load(loadingDir + File.separator + "add_cpu.so");
 
     TVMContext ctx = TVMContext.cpu();
-    
+
     long[] shape = new long[]{2};
     NDArray arr = NDArray.empty(shape, ctx);
     arr.copyFrom(new float[]{3f, 4f});
     NDArray res = NDArray.empty(shape, ctx);
-    
+
     fadd.entryFunc().pushArg(arr).pushArg(arr).pushArg(res).invoke();
     System.out.println(Arrays.toString(res.asFloatArray()));
 
