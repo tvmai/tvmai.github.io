@@ -1,8 +1,8 @@
 ---
 layout: post
-title: 'Optimizing Deep Learning on ARM Mali GPU with TVM'
+title: 'Optimizing Mobile Deep Learning on ARM Mali GPU with TVM'
 author: Lianmin Zheng
-date: 2018-01-17
+date: 2018-01-16
 ---
 
 With the great success of deep learning, the demand for
@@ -16,7 +16,7 @@ mobile GPU. The non-trivial extra work eventually results in the poor support
 of mobile GPU in most deep learning frameworks.
 
 TVM addresses the difficulty of deploying for different hardwares by
-introducing an unified IR stack, with which the optimization for different 
+introducing an unified IR stack, with which the optimization for different
 hardwares can be done easily.  In this post, we show how we use
 [TVM](http://tvmlang.org/2017/08/17/tvm-release-announcement.html)/[NNVM](http://tvmlang.org/2017/10/06/nnvm-compiler-announcement.html) to
 generate efficient kernels for ARM Mali GPU and do end-to-end compilation.
@@ -79,22 +79,22 @@ the `warp size` is 1, so that branch divergence is not a major problem.
 The convolution layer is the core of most deep neural networks and
 takes most of the computation time. So we take the convolution layer
 as example to demonstrate how common optimization techniques like
-packing, tiling, unrolling and vectorization are applied in TVM. 
+packing, tiling, unrolling and vectorization are applied in TVM.
 
 ## Im2Col with GEMM
 A well-known algorithm for convolution layer is [im2col](https://petewarden.com/2015/04/20/why-gemm-is-at-the-heart-of-deep-learning/),
-which converts the little 3D input cubes to columns of a matrix and 
-perform a GEMM. The advantage of this method is easy utilization of 
+which converts the little 3D input cubes to columns of a matrix and
+perform a GEMM. The advantage of this method is easy utilization of
 highly optimized BLAS library.  However, the memory redundancy
 (9x memory for 3x3 kernel) is awful.
 
 ## Spatial Packing
 Instead, we adopt a method to calculate the convolution, and apply the
-optimization techniques step by step. A convolution layer in VGG-16 
+optimization techniques step by step. A convolution layer in VGG-16
 is used as tuning case, whose configuration is listed below.
 We assume the batch size is 1 for inference.
 
-| Input Shape | Output Shape | Kernel Size | Stride | Padding | 
+| Input Shape | Output Shape | Kernel Size | Stride | Padding |
 | ----------- | ------------ | ----------- | ------ | ------- |
 | 56x56x256   | 56x56x256    | 3x3         | (1, 1) | (1, 1)  |
 
@@ -113,7 +113,7 @@ tiling so that we can access the memory sequentially, which reduces
 cache miss rate.
 
 We do tiling on the width dimension of the input image and CO dimension
-of the filter matrix.  This is described by `tvm.compute`.  
+of the filter matrix.  This is described by `tvm.compute`.
 
 ``` python
 # set tiling factor
@@ -375,8 +375,8 @@ Our test environment is
 
 ```
 Firefly-RK3399 4G
-CPU: dual-core Cortex-A72 + quad-core Cortex-A53  
-GPU: Mali-T860MP4 
+CPU: dual-core Cortex-A72 + quad-core Cortex-A53
+GPU: Mali-T860MP4
 
 Arm Compute Library : v17.12
 MXNet: v1.0.1
@@ -408,7 +408,7 @@ depthwise convolution.  This also reflects the advantage of NNVM
 software stack.
 
 ## Half-Precision Performance
-Precision in deep neural networks is not very important, especially 
+Precision in deep neural networks is not very important, especially
 for the inference on mobile devices. Using low-precision arithmetic
 can make the inference much faster. We also test the half-precision
 floating number on Mali GPU.
@@ -427,13 +427,13 @@ so that doubling the speed. But it needs good input shape for
 longer vectorization and fine-tuning some parameters.
 
 ## Further Work on Mobile Devices
-We should admit that there is still some room for improvement, 
+We should admit that there is still some room for improvement,
 mainly at the graph level, such as model compression and weight prelayout.
 Further improvement in NNVM will try to solve these problems.
 
 # Show me the code
-[End-to-End benchmark](https://github.com/merrymercy/tvm-mali)  
-[Convolution and Depthwise Convolution Schedule](https://github.com/dmlc/tvm/tree/master/topi/python/topi/mali) 
+[End-to-End benchmark](https://github.com/merrymercy/tvm-mali)
+[Convolution and Depthwise Convolution Schedule](https://github.com/dmlc/tvm/tree/master/topi/python/topi/mali)
 
 # Bio & Acknowledgement
 [Lianmin Zheng](https://lmzheng.net) is an undergraduate
@@ -446,5 +446,5 @@ advice and [Yizhi Liu](https://github.com/yzhliu) for his earlier work.
 
 
 # Reference
-\[1\] [ARM Mali GPU OpenCL Developer Guide](https://developer.arm.com/docs/100614/0302)  
+\[1\] [ARM Mali GPU OpenCL Developer Guide](https://developer.arm.com/docs/100614/0302)
 \[2\] [ARM Developer](https://developer.arm.com/)
