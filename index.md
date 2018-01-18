@@ -12,11 +12,17 @@ TVM: End to End IR stack for AI Frameworks
 [![GitHub license](http://dmlc.github.io/img/apache2.svg)](./LICENSE)
 [![Build Status](http://mode-gpu.cs.washington.edu:8080/buildStatus/icon?job=dmlc/tvm/master)](http://mode-gpu.cs.washington.edu:8080/job/dmlc/job/tvm/job/master/)
 
+
+
 TVM stack is a unified intermediate representation (IR) stack that will close the gap between the productivity-focused deep learning frameworks,
 and the performance- or efficiency-oriented hardware backends. The project contains the following components:
 - [TVM](https://github.com/dmlc/tvm) Tensor IR Stack for Deep Learning Systems
 - [NNVM](https://github.com/dmlc/nnvm) Graph IR stack for Deep Learning Systems
 - NNVM compiler: open compiler for AI Frameworks (shares same repo with NNVM)
+
+{:center: style="text-align: center"}
+![image](/images/main/stack_tvmlang.png){: width="90%"}
+{:center}
 
 News
 ----
@@ -28,6 +34,8 @@ News
 </li>
 {% endfor %}
 </ul>
+
+
 
 
 
