@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'Optimizing Mobile Deep Learning on ARM Mali GPU with TVM'
+title: 'Optimizing Mobile Deep Learning on ARM GPU with TVM'
 author: Lianmin Zheng
 date: 2018-01-16
 ---
@@ -27,7 +27,7 @@ Both graph-level and operator-level optimization contribute
 to this speed up.
 
 {:center: style="text-align: center"}
-![image](/images/opt-mali/end2end.png/){: width="95%"}
+![image](/images/opt-mali/end2end.png){: width="95%"}
 {:center}
 
 <center> Figure. Inference Speed of Different Backends on ImageNet</center> <p></p>
@@ -389,7 +389,7 @@ We use NNVM and TVM to do end-to-end compilation.
 ## Performance
 
 {:center: style="text-align: center"}
-![image](/images/opt-mali/end2end.png/){: width="95%"}
+![image](/images/opt-mali/end2end.png){: width="95%"}
 {:center}
 
 <center> Figure 2. Inference Speed of Different Backends on ImageNet</center> <p></p>
@@ -432,8 +432,9 @@ mainly at the graph level, such as model compression and weight prelayout.
 Further improvement in NNVM will try to solve these problems.
 
 # Show me the code
-[End-to-End benchmark](https://github.com/merrymercy/tvm-mali)
-[Convolution and Depthwise Convolution Schedule](https://github.com/dmlc/tvm/tree/master/topi/python/topi/mali)
+
+- [End-to-End benchmark](https://github.com/merrymercy/tvm-mali)
+- [Convolution and Depthwise Convolution Schedule](https://github.com/dmlc/tvm/tree/master/topi/python/topi/mali)
 
 # Bio & Acknowledgement
 [Lianmin Zheng](https://lmzheng.net) is an undergraduate
