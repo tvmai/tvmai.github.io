@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Bringing TVM into TensorFlow for Optimizing Neural Machine Translation inside Alibaba"
+title:  "Bringing TVM into TensorFlow for Optimizing Neural Machine Translation on GPU"
 date:   2018-03-11
 ---
 
@@ -24,10 +24,10 @@ In Transformer model, batch matmul is widely used for the computation of multi-h
 {:center}
 
 
-After a thorough profiling of the transformer model in inference phase, it is shown that batch matmul computations contribute up to ~ $30%$ of GPU kernel execution time. Also after using nvprof to do some first-principle analysis of cuBLAS's batch matmul kernel，it is clearly that current implementation is under-performing and some interesting phenomena have been observed.
+After a thorough profiling of the transformer model in inference phase, it is shown that batch matmul computations contribute up to ~ 30% of GPU kernel execution time. Also after using nvprof to do some first-principle analysis of cuBLAS's batch matmul kernel，it is clearly that current implementation is under-performing and some interesting phenomena have been observed.
 
 ## What is batch matmul
-Typically, a batch matmul computation performs the matrix-matrix multiplication over a batch of matrices. The batch is considered to be "uniform", i.e. all instances have the same dimensions ($M$, $N$, $K$), leading dimensions (lda, ldb, ldc) and transpositions for their respective A, B and C matrices. 
+Typically, a batch matmul computation performs the matrix-matrix multiplication over a batch of matrices. The batch is considered to be "uniform", i.e. all instances have the same dimensions (M, N, K), leading dimensions (lda, ldb, ldc) and transpositions for their respective A, B and C matrices. 
 
 Batch matmul computation can be described more vividly as follows: 
 
@@ -41,9 +41,9 @@ void BatchedGemm(input A, input B, output C, M, N, K, batch_dimension) {
 
 ### Batch matmul shapes
 
-In the language translation tasks, the shape of the batch matmul is significantly smaller than normal matmul computation in other workloads. The shape in transformer is relevant to the length of input sentences and that of decoder steps. Normally it is less than $30$.
+In the language translation tasks, the shape of the batch matmul is significantly smaller than normal matmul computation in other workloads. The shape in transformer is relevant to the length of input sentences and that of decoder steps. Normally it is less than 30.
 
-As to the batch dimension, it is a fixed number given a certain inference batch size. For instance, if $16$ is used as batch size with beam size being $4$, the batch dimension is $16$ \* $4$ \* number of head (heads number in multi-head attention is usually $8$). The $M$, $K$, $N$, i.e. the shape of the matrix, is within the range of  $[1,$ max decode length $]$ or $[1,$ max encode length $]$.
+As to the batch dimension, it is a fixed number given a certain inference batch size. For instance, if 16 is used as batch size with beam size being 4, the batch dimension is 16 \* 4 \* number of head (heads number in multi-head attention is usually 8). The M, K, N, i.e. the shape of the matrix, is within the range of  [1, max decode length] or [1, max encode length].
 
 ### Performance issue of cuBLAS' batch matmul
 
@@ -56,7 +56,7 @@ Then we profile the cuBLAS performance of batch matmul with multiple shapes thro
 | maxwell\_sgemmBatched\_128x128\_raggedMn\_tn | 2155872256 | 64.72% |
 | maxwell\_sgemmBatched\_64x64\_raggedMn\_tn | 161990822 | 20.86% |
 
-Of all the maxwell_sgemmBatched_128x128_raggedMn_tn calls with various shapes(varing Mn and tn), it can be shown that all these kernels actually execute the same amount of FLOPs. It can be infered that all these different shapes are padded to a certain shape. Among all these various shapes, the extreme case is that the theoretical flops is only $2.7%$ of the actually executed flops, *so most of the computation are purely redundant*. Another set of cuBLAS kernel  maxwell_sgemmBatched_64x64_raggedMn_tn have the same issue.
+Of all the maxwell_sgemmBatched_128x128_raggedMn_tn calls with various shapes(varing Mn and tn), it can be shown that all these kernels actually execute the same amount of FLOPs. It can be infered that all these different shapes are padded to a certain shape. Among all these various shapes, the extreme case is that the theoretical flops is only 2.7% of the actually executed flops, *so most of the computation are purely redundant*. Another set of cuBLAS kernel  maxwell_sgemmBatched_64x64_raggedMn_tn have the same issue.
 
 <b>It is obvious that cuBLAS' batch matmul mplementation is inefficient. Thus TVM is  exploited to generate efficient batch matmul kernels for for our NMT workloads.</b>
 
@@ -106,9 +106,9 @@ After declaring the computation, we need to devise our own schedule carefully to
   s[C].bind(vty, thread_yz)
   s[C].bind(vtx, thread_xz)
 ```
-We fuse the outer dimensions of the batch matmul, i.e. the BB and FF of the op's dimension, normally known as "batch" dimension in batch matmul computation. Then we split the outer and the inner dimensions by a factor of (number_thread * vthread).
+We fuse the outer dimensions of the batch matmul, i.e. the BB and FF of the op's dimension, normally known as "batch" dimension in batch matmul computation. Then we split the outer and the inner dimensions by a factor of (`number_thread * vthread`).
 
-Strided pattern is not needed in batch matmul, thus the virtual thread number (vthread\_y & vthread\_x) are both set to $1$.
+Strided pattern is not needed in batch matmul, thus the virtual thread number (`vthread\_y` and `vthread\_x`) are both set to 1.
 
 ### Finding the best combination of number\_thread
 
@@ -122,7 +122,7 @@ The results below are obtained on a NVIDIA M40 GPU device with CUDA8.0 support.
 | [64,8,1,17,128] | 1,1 | 256,1 | 41.95 |
 | [64,8,1,17,128] | 32,1 | 1,1 | 94.61 |
 
-As learned from [past experience](http://tvmlang.org/2017/08/22/Optimize-Deep-Learning-GPU-Operators-with-TVM-A-Depthwise-Convolution-Example.html), the method to find the best combination of num\_thread\_y and num\_thread\_x is through brute force search. After a brute force search, the best combination for current shape can be found, which in current computation is num\_thread\_y = $8$ and num\_thread\_x = $32$.
+As learned from [past experience](http://tvmlang.org/2017/08/22/Optimize-Deep-Learning-GPU-Operators-with-TVM-A-Depthwise-Convolution-Example.html), the method to find the best combination of `num_thread_y` and `num_thread_x` is through brute force search. After a brute force search, the best combination for current shape can be found, which in current computation is `num\_thread\_y = 8 and num\_thread\_x = 32.
 
 # Fuse batch matmul with other operations
 
@@ -161,7 +161,7 @@ C = tvm.compute(
 
 ## Kernel performance
 
-We choose the shape of [batch=$64$, heads=$8$, M=$1$, N=$17$, K=$128$] to elaborate the performance of the generated code. $17$ is chosen as the sequenc length since it is the average input length in our production scenarios.
+We choose the shape of [batch=64, heads=8, M=1, N=17, K=128] to elaborate the performance of the generated code. 17 is chosen as the sequenc length since it is the average input length in our production scenarios.
 
 | Input Shape [batch,heads,M,N,K] | computation | time |
 | --------- | ---------- | ----- |
@@ -170,7 +170,7 @@ We choose the shape of [batch=$64$, heads=$8$, M=$1$, N=$17$, K=$128$] to elabor
 | [64,8,1,17,128] | TVM BatchMatMul | 37.62us |
 | [64,8,1,17,128] | TVM BatchMatMul+Transpose(fused) | 38.394us |
 
-It is clearly that TVM generated kernel(with schdule optimization) brings at least $13X$ speed-up. The kernel fusion optimization brings further $1.7X$ speed-up.
+It is clearly that TVM generated kernel(with schdule optimization) brings at least 13X speed-up. The kernel fusion optimization brings further 1.7X speed-up.
 
 # Ahead of time Codegen
 
