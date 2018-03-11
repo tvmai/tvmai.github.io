@@ -53,10 +53,10 @@ Then we profile the cuBLAS performance of batch matmul with multiple shapes thro
 
 | kernel |  nvprof observed FLOPs | nvprof observed FLOPs Efficiency |
 | --------- |  ----- | ------ |
-| maxwell\_sgemmBatched\_128x128\_raggedMn\_tn | 2155872256 | 64.72% |
-| maxwell\_sgemmBatched\_64x64\_raggedMn\_tn | 161990822 | 20.86% |
+| **maxwell\_sgemmBatched\_128x128\_raggedMn\_tn** | 2155872256 | 64.72% |
+| **maxwell\_sgemmBatched\_64x64\_raggedMn\_tn** | 161990822 | 20.86% |
 
-Of all the maxwell_sgemmBatched_128x128_raggedMn_tn calls with various shapes(varing Mn and tn), it can be shown that all these kernels actually execute the same amount of FLOPs. It can be infered that all these different shapes are padded to a certain shape. Among all these various shapes, the extreme case is that the theoretical flops is only 2.7% of the actually executed flops, *so most of the computation are purely redundant*. Another set of cuBLAS kernel  maxwell_sgemmBatched_64x64_raggedMn_tn have the same issue.
+Of all the **maxwell_sgemmBatched_128x128_raggedMn_tn** calls with various shapes(varing Mn and tn), it can be shown that all these kernels actually execute the same amount of FLOPs. It can be infered that all these different shapes are padded to a certain shape. Among all these various shapes, the extreme case is that the theoretical flops is only 2.7% of the actually executed flops, *so most of the computation are purely redundant*. Another set of cuBLAS kernel **maxwell_sgemmBatched_64x64_raggedMn_tn** have the same issue.
 
 <b>It is obvious that cuBLAS' batch matmul mplementation is inefficient. Thus TVM is  exploited to generate efficient batch matmul kernels for for our NMT workloads.</b>
 
@@ -108,7 +108,7 @@ After declaring the computation, we need to devise our own schedule carefully to
 ```
 We fuse the outer dimensions of the batch matmul, i.e. the BB and FF of the op's dimension, normally known as "batch" dimension in batch matmul computation. Then we split the outer and the inner dimensions by a factor of (`number_thread * vthread`).
 
-Strided pattern is not needed in batch matmul, thus the virtual thread number (`vthread\_y` and `vthread\_x`) are both set to 1.
+Strided pattern is not needed in batch matmul, thus the virtual thread number (`vthread_y` and `vthread_x`) are both set to 1.
 
 ### Finding the best combination of number\_thread
 
@@ -122,7 +122,7 @@ The results below are obtained on a NVIDIA M40 GPU device with CUDA8.0 support.
 | [64,8,1,17,128] | 1,1 | 256,1 | 41.95 |
 | [64,8,1,17,128] | 32,1 | 1,1 | 94.61 |
 
-As learned from [past experience](http://tvmlang.org/2017/08/22/Optimize-Deep-Learning-GPU-Operators-with-TVM-A-Depthwise-Convolution-Example.html), the method to find the best combination of `num_thread_y` and `num_thread_x` is through brute force search. After a brute force search, the best combination for current shape can be found, which in current computation is `num\_thread\_y = 8 and num\_thread\_x = 32.
+As learned from [past experience](http://tvmlang.org/2017/08/22/Optimize-Deep-Learning-GPU-Operators-with-TVM-A-Depthwise-Convolution-Example.html), the method to find the best combination of `num_thread_y` and `num_thread_x` is through brute force search. After a brute force search, the best combination for current shape can be found, which in current computation is `num\thread_y` = 8 and `num_thread_x` = 32.
 
 # Fuse batch matmul with other operations
 
