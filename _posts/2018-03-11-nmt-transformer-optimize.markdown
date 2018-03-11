@@ -8,7 +8,7 @@ date:   2018-03-11
 
 Neural Machine Translation (NMT) is an end-to-end approach for automating translation, with the potential to overcome many of the weaknesses of conventional phrase-based translation systems. Recently, Alibaba Group is working on deploying neural machine translation service for global e-commerce.  
 
-Currently we are exploiting Transformer Model as the major backbone for our NMT system since it is more friendly for offline training with the on-par(even higher) precison against classical RNN/LSTM based models. Although Transformer model is friendly for offline training phase due to that it breaks the dependencies across time steps, it is not quite friendly for online inference. In our production environment, with the intial version of Transformer model, it has been found that the inference speed is around *1.5X* to *2X* slower than that of the LSTM version. Several optimizations have been undertaken to improve the inference performance, such as graph-level op fusion, loop invariant code motion, etc. Also it is has been observed that batch matmul is a major performance hot-spot of Transformer model and the current implementation in cuBLAS is not well optimized.
+Currently we are exploiting Transformer Model[1] as the major backbone for our NMT system since it is more friendly for offline training with the on-par(even higher) precison against classical RNN/LSTM based models. Although Transformer model is friendly for offline training phase due to that it breaks the dependencies across time steps, it is not quite friendly for online inference. In our production environment, with the intial version of Transformer model, it has been found that the inference speed is around *1.5X* to *2X* slower than that of the LSTM version. Several optimizations have been undertaken to improve the inference performance, such as graph-level op fusion, loop invariant code motion, etc. Also it is has been observed that batch matmul is a major performance hot-spot of Transformer model and the current implementation in cuBLAS is not well optimized.
 
 {:center: style="text-align: center"}
 ![image](/images/nmt-transformer/model_arch.png){: width="90%"}
@@ -23,8 +23,7 @@ In Transformer model, batch matmul is widely used for the computation of multi-h
 ![image](/images/nmt-transformer/batchmatmul.png){: width="90%"}
 {:center}
 
-
-After a thorough profiling of the transformer model in inference phase, it is shown that batch matmul computations contribute up to ~ 30% of GPU kernel execution time. Also after using nvprof to do some first-principle analysis of cuBLAS's batch matmul kernel，it is clearly that current implementation is under-performing and some interesting phenomena have been observed.
+After a thorough profiling of the transformer model in inference phase, it is shown that batch matmul computations contribute up to ~ 30% of GPU kernel execution time. Also after using nvprof[2] to do some first-principle analysis of cuBLAS's batch matmul kernel，it is clearly that current implementation is under-performing and some interesting phenomena have been observed.
 
 ## What is batch matmul
 Typically, a batch matmul computation performs the matrix-matrix multiplication over a batch of matrices. The batch is considered to be "uniform", i.e. all instances have the same dimensions (M, N, K), leading dimensions (lda, ldb, ldc) and transpositions for their respective A, B and C matrices. 
@@ -181,3 +180,6 @@ The generated efficient kernels for the specific shapes and the fall-back one ar
 # Summary
 Inside Alibaba, we found that TVM is a very productive tool to develop high performance GPU kernels to meet our in-house requirements. In this blog, NMT Transformer model is taken as an example to illustrate our optimization strategy with TVM. Firstly we locate the hot-spot of Transformer model through first-principle analysis. Then we use TVM to generate highly optimized CUDA kernel to replace cuBLAS version(*13X* speed-up is observed). Next we leverage TVM's kernel fusion mechanism to fuse the preceding/following operations of batch matmul to bring further performance improvement(with *1.7X* further performance improvment). The end2end performance improvement is *1.4X*. Based on those generated kernels a graph optimization pass is developed to replace the original computation pattern with the TVM fused kernels automatically to ensure the optimization is transparent to end users since as AI infrastructure provider we found transparency of optimization strategy is very important to popularize its adoption. In the last, but not the least, all those optimizations are integrated into TensorFlow in a loosely coupled way, demonstrating a potential way for integrating TVM with different deep learning frameworks. Also there is an ongoing work to integrate TVM as a codegen backend for TensorFlow, we hope in the future further result could be shared with the community.
 
+## References
+[1] [Attention is All You Need](https://arxiv.org/pdf/1706.03762.pdf) 
+[2] [nvprof is Your Handy Universal GPU Profiler](https://devblogs.nvidia.com/cuda-pro-tip-nvprof-your-handy-universal-gpu-profiler/)
