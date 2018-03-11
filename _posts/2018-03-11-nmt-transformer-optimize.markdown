@@ -185,4 +185,4 @@ Inside Alibaba, we found that TVM is a very productive tool to develop high perf
 
 [2] [nvprof is Your Handy Universal GPU Profiler](https://devblogs.nvidia.com/cuda-pro-tip-nvprof-your-handy-universal-gpu-profiler/)
 
-[3] [Add LINM(Loop Invariant Node Motion) Optimization in GraphOptimizer](https://github.com/tensorflow/tensorflow/pull/16306
+[3] [Add Loop Invariant Node Motion Optimization in GraphOptimizer](https://github.com/tensorflow/tensorflow/pull/16306)
