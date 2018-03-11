@@ -132,7 +132,7 @@ As learned from [past experience](http://tvmlang.org/2017/08/22/Optimize-Deep-Le
 
 # Fuse batch matmul with other operations
 
-Normally, the existing "black-box" cuBLAS library calls play as the boundary of the normally used "op fusion" optimization tactics. However, with the generated efficient batch matmul kernel, the fusion boundary can be easily broken, thus futher performance improvement can be obtained.
+Normally, the existing "black-box" cuBLAS library calls play as the boundary of the normally used "op fusion" optimization tactics. However, with the generated efficient batch matmul kernel, the fusion boundary can be easily broken, more than just element-wise operations can be fused, thus futher performance improvement can be obtained.
 
 By analyzing the computation graph, it has been observed that a batch matmul is always followed by a *broadcast add* operation or a *transpose* operation. By fusing add or transpose operation with batch matmul, kernel launch overhead and redundant memory access can be reduced.
 
