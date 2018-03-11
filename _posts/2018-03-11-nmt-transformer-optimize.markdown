@@ -8,7 +8,7 @@ date:   2018-03-11
 
 Neural Machine Translation (NMT) is an end-to-end approach for automating translation, with the potential to overcome many of the weaknesses of conventional phrase-based translation systems. Recently, Alibaba Group is working on deploying neural machine translation service for global e-commerce.  
 
-Currently we are exploiting Transformer Model[1] as the major backbone for our NMT system since it is more friendly for offline training with the on-par(even higher) precison against classical RNN/LSTM based models. Although Transformer model is friendly for offline training phase due to that it breaks the dependencies across time steps, it is not quite friendly for online inference. In our production environment, with the intial version of Transformer model, it has been found that the inference speed is around *1.5X* to *2X* slower than that of the LSTM version. Several optimizations have been undertaken to improve the inference performance, such as graph-level op fusion, loop invariant code motion, etc. Also it is has been observed that batch matmul is a major performance hot-spot of Transformer model and the current implementation in cuBLAS is not well optimized.
+Currently we are exploiting Transformer Model[1] as the major backbone for our NMT system since it is more friendly for offline training with the on-par(even higher) precison against classical RNN/LSTM based models. Although Transformer model is friendly for offline training phase due to that it breaks the dependencies across time steps, it is not quite friendly for online inference. In our production environment, with the intial version of Transformer model, it has been found that the inference speed is around *1.5X* to *2X* slower than that of the LSTM version. Several optimizations have been undertaken to improve the inference performance, such as graph-level op fusion, loop invariant motion[3], etc. Also it is has been observed that batch matmul is a major performance hot-spot of Transformer model and the current implementation in cuBLAS is not well optimized.
 
 {:center: style="text-align: center"}
 ![image](/images/nmt-transformer/model_arch.png){: width="90%"}
@@ -182,4 +182,7 @@ Inside Alibaba, we found that TVM is a very productive tool to develop high perf
 
 ## References
 [1] [Attention is All You Need](https://arxiv.org/pdf/1706.03762.pdf) 
+
 [2] [nvprof is Your Handy Universal GPU Profiler](https://devblogs.nvidia.com/cuda-pro-tip-nvprof-your-handy-universal-gpu-profiler/)
+
+[3] [Add LINM(Loop Invariant Node Motion) Optimization in GraphOptimizer](https://github.com/tensorflow/tensorflow/pull/16306
