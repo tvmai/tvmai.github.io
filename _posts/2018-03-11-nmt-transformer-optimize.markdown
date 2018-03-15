@@ -30,7 +30,7 @@ In Transformer, batch matmul is widely used in the computation of multi-head att
 ![image](/images/nmt-transformer/batchmatmul.png){: width="90%"}
 {:center}
 
-We conducted a thorough profiling of the Transformer model in the inference phase, and it is shown that batch matmul computation contribute up to ~ 30% of GPU kernel execution time. After using nvprof[2] to do some first-principle analysis of cuBLAS's batch matmul kernel，it is clearly that current implementation is quite under-performing and several interesting phenomena have been observed.
+We conducted a thorough profiling of the Transformer model in the inference phase, and it is shown that batch matmul computation contribute up to ~ 30% of GPU kernel execution time. Using nvprof[2] to do some first-principle analysis of cuBLAS's batch matmul kernel，it is clearly indicated that current implementation is quite under-performing and several interesting phenomena are observed.
 
 ## What is batch matmul
 Typically, a batch matmul computation performs the matrix-matrix multiplication over a batch of matrices. The batch is considered to be "uniform", i.e. all instances have the same dimensions (M, N, K), leading dimensions (lda, ldb, ldc) and transpositions for their respective A, B and C matrices.
@@ -53,7 +53,7 @@ As to the batch dimension, it is a fixed number given a certain inference batch 
 
 ### Performance issue of cuBLAS' batch matmul
 
-Firstly, we make a theoretical FLOPs analysis over the batch matmul kernels, the results are quite interesting, all the batch matmul have limited computation intensity (less than 1 TFLOPs).
+Firstly, we make a theoretical FLOPs analysis over the batch matmul kernels. The results are quite interesting: all the batch matmul have limited computation intensity (less than 1 TFLOPs).
 
 Then we profile the cuBLAS performance of batch matmul with multiple shapes through nvprof. The table below shows some of the metrics obtained on a NVIDIA M40 GPU with CUDA8.0.
 
