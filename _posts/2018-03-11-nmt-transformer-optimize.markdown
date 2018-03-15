@@ -57,12 +57,12 @@ Firstly, we make a theoretical FLOPs analysis over the batch matmul kernels, the
 
 Then we profile the cuBLAS performance of batch matmul with multiple shapes through nvprof. The table below shows some of the metrics obtained on a NVIDIA M40 GPU with CUDA8.0.
 
-| input shape[batch, M, N, K] | kernel | theoretical FLOPs | nvprof observed FLOPs | theoretical FLOPs / nvprof observed FLOPs |
+| input shape <br> [batch, M, N, K] | kernel | theoretical FLOPs | nvprof observed FLOPs | theoretical FLOPs / <br> observed FLOPs |
 | --------- |  ----- | ------ | ------ | ------ |
-| [512, 17, 17, 128] | **maxwell\_sgemmBatched\_128x128\_raggedMn\_tn** | 18,939,904 | 2,155,872,256 | 0.87%  |
-| [512, 1, 17, 128] | **maxwell\_sgemmBatched\_128x128\_raggedMn\_tn** | 1,114,112 | 2155872256 | 0.052% |
-| [512, 17, 1, 128] | **maxwell\_sgemmBatched\_128x128\_raggedMn\_tn** | 1,114,112 | 2155872256 | 0.052% |
-| [512, 30, 30, 128] | **maxwell\_sgemmBatched\_128x128\_raggedMn\_tn** | 58,982,400 | 2155872256 | 2.74% |
+| [512, 17, 17, 128] | **maxwell\_sgemmBatched\_128x128\_raggedMn\_tn** | 18939904 | 2155872256 | 0.87%  |
+| [512, 1, 17, 128] | **maxwell\_sgemmBatched\_128x128\_raggedMn\_tn** | 1114112 | 2155872256 | 0.052% |
+| [512, 17, 1, 128] | **maxwell\_sgemmBatched\_128x128\_raggedMn\_tn** | 1114112 | 2155872256 | 0.052% |
+| [512, 30, 30, 128] | **maxwell\_sgemmBatched\_128x128\_raggedMn\_tn** | 58982400 | 2155872256 | 2.74% |
 
 Even with different shapes (varing in M, N, K), all the **maxwell_sgemmBatched_128x128_raggedMn_tn** calls execute the same amount of FLOPs, which is much bigger than the theoretical value. It can be inferred that all these different shapes may be padded to a certain shape. Among all these shapes, even in the best case, the theoretical FLOPs is still only 2.74% of the actually executed FLOPs, *therefore most of the computation is quite redundant*. Similarly, the calls of another cuBLAS kernel **maxwell_sgemmBatched_64x64_raggedMn_tn** show the same phenomena.
 
