@@ -10,12 +10,11 @@ Neural Machine Translation (NMT) is an end-to-end approach for automating transl
 
 Currently we are exploiting Transformer [1] as the major backbone in our NMT system since it is more friendly for efficient offline training with on-par (even higher) precison against classical RNN/LSTM-based models. Although Transformer is friendly for the offline training phase as it breaks the dependencies across time steps, it is not quite efficiency for online inference. In our production environment, it has been found that the inference speed of the intial version of Transformer is around **1.5X** to **2X** slower than that of the LSTM version. Several optimizations have been undertaken to improve the inference performance, such as graph-level op fusion, loop invariant node motion [3] and so on. Specifically, it has been observed that batch matmul is a major performance hot-spot in Transformer and the current implementation in cuBLAS is not well optimized.
 
-The results below show that TVM generated kernel (with schdule optimization) brings at least <b>*13X*</b> speed-up for batch matmul computation. 
+The results below show that TVM generated kernel (with schdule optimization) brings at least <b>*13X*</b> speed-up for batch matmul computation, and a futher speed up with operator fusion enabled.
 
-| Input Shape [batch,heads,M,N,K] | computation | time |
-| --------- | ---------- | ----- |
-| [64,8,1,17,128] | tf-r1.4 BatchMatMul | 513.9us |
-| [64,8,1,17,128] | TVM BatchMatMul | 37.62us |
+{:center: style="text-align: center"}
+![image](/images/nmt-transformer/batch-matmul-bar-charts.png){: width="95%"}
+{:center}
 
 {:center: style="text-align: center"}
 ![image](/images/nmt-transformer/model_arch.png){: width="90%"}
