@@ -1,28 +1,36 @@
 ---
 layout: post
 title:  "Bringing TVM into TensorFlow for Optimizing Neural Machine Translation on GPU"
-date:   2018-03-11
+date:   2018-03-23
 ---
 
-# Background
+## Authors
+
+This is a guest blogpost contributed by Alibaba Group's PAI-Blade team
+
+## Background
 
 Neural Machine Translation (NMT) is an end-to-end approach for automating translation, with the potential to overcome the weaknesses in conventional phrase-based translation systems. Recently, Alibaba Group is working on deploying NMT service for global e-commerce.
 
-Currently we are exploiting Transformer [1] as the major backbone in our NMT system since it is more friendly for efficient offline training with on-par (even higher) precison against classical RNN/LSTM-based models. Although Transformer is friendly for the offline training phase as it breaks the dependencies across time steps, it is not quite efficiency for online inference. In our production environment, it has been found that the inference speed of the intial version of Transformer is around **1.5X** to **2X** slower than that of the LSTM version. Several optimizations have been undertaken to improve the inference performance, such as graph-level op fusion, loop invariant node motion [3] and so on. Specifically, it has been observed that batch matmul is a major performance hot-spot in Transformer and the current implementation in cuBLAS is not well optimized.
+Currently we are exploiting Transformer [1] as the major backbone in our NMT system since it is more friendly for efficient offline training with on-par (even higher) precison against classical RNN/LSTM-based models. Although Transformer is friendly for the offline training phase as it breaks the dependencies across time steps, it is not quite efficiency for online inference. In our production environment, it has been found that the inference speed of the intial version of Transformer is around **1.5X** to **2X** slower than that of the LSTM version. Several optimizations have been undertaken to improve the inference performance, such as graph-level op fusion, loop invariant node motion [3].
+One paricular challenge we observed, is that batch matmul is a major performance hot-spot in Transformer and the current implementation in cuBLAS is not well optimized.
 
 {:center: style="text-align: center"}
-![image](/images/nmt-transformer/model_arch.png){: width="90%"}
+![image](/images/nmt-transformer/model_arch.png){: width="40%"}
 {:center}
 
 The results below show that TVM generated kernel (with schdule optimization) brings at least <b>*13X*</b> speed-up for batch matmul computation, and a futher speed up with operator fusion enabled.
 
 {:center: style="text-align: center"}
-![image](/images/nmt-transformer/batch-matmul-bar-charts.png){: width="95%"}
+![image](/images/nmt-transformer/batch-matmul-bar-charts.png){: width="45%"}
 {:center}
 
-# Batch Matmul
 
-## Why batch matmul
+
+
+## Batch Matmul
+
+### Why batch matmul
 In Transformer, batch matmul is widely used in the computation of multi-head attention. Using batch matmul, multiple heads in the attention layer can run in parallel, which can help improve the computation efficiency of the hardware.
 
 {:center: style="text-align: center"}
@@ -31,7 +39,7 @@ In Transformer, batch matmul is widely used in the computation of multi-head att
 
 We conducted a thorough profiling of the Transformer model in the inference phase, and it is shown that batch matmul computation contribute up to ~ 30% of GPU kernel execution time. Using nvprof[2] to do some first-principle analysis of cuBLAS's batch matmul kernel，it is clearly indicated that current implementation is quite under-performing and several interesting phenomena are observed.
 
-## What is batch matmul
+### What is batch matmul
 Typically, a batch matmul computation performs the matrix-matrix multiplication over a batch of matrices. The batch is considered to be "uniform", i.e. all instances have the same dimensions (M, N, K), leading dimensions (lda, ldb, ldc) and transpositions for their respective A, B and C matrices.
 
 Batch matmul computation can be described more concretely as follows:
@@ -44,7 +52,7 @@ void BatchedGemm(input A, input B, output C, M, N, K, batch_dimension) {
 }
 ```
 
-### Batch matmul shapes
+#### Batch matmul shapes
 
 In the language translation tasks, shape of the batch matmul is significantly smaller than normal matmul computation in other workloads. The shape in Transformer is relevant to the length of input sentences and that of decoder steps. Normally, it is smaller than 30.
 
@@ -81,11 +89,11 @@ C = tvm.compute((batch, M, N),
          name = 'C')
 ```
 
-# Schedule optimization
+## Schedule optimization
 
 After declaring the computation, we need to devise our own schedule carefully to squeeze performance potential.
 
-## Tuning parameters of block/thread numbers
+### Tuning parameters of block/thread numbers
 
 ```
   # thread indices
@@ -117,7 +125,7 @@ We fuse the outer dimensions of the batch matmul, i.e. the BB and FF of the op's
 
 Strided pattern is not needed in batch matmul, thus the virtual thread number (`vthread_y` and `vthread_x`) are both set to 1.
 
-### Finding the best combination of number\_thread
+#### Finding the best combination of number\_thread
 
 The results below are obtained on a NVIDIA M40 GPU device with CUDA8.0.
 
@@ -131,7 +139,7 @@ The results below are obtained on a NVIDIA M40 GPU device with CUDA8.0.
 
 As learned from [past experience](http://tvmlang.org/2017/08/22/Optimize-Deep-Learning-GPU-Operators-with-TVM-A-Depthwise-Convolution-Example.html), the method to find the best combination of `num_thread_y` and `num_thread_x` is through brute-force search. After a brute-force search, the best combination for current shape can be found, which in current computation is `num_thread_y` = 8 and `num_thread_x` = 32.
 
-# Fuse batch matmul with other operations
+## Fuse batch matmul with other operations
 
 Normally, the existing "black-box" cuBLAS library calls play the role as the boundary of the normally used "op fusion" optimization tactics. However, with the generated efficient batch matmul kernel, the fusion boundary can be easily broken, more than just element-wise operations can be fused, thus futher performance improvement can be obtained.
 
@@ -165,7 +173,7 @@ C = tvm.compute(
            lambda yb, m, yf, x: tvm.sum(A[yb, yf, m, k] * B[yb, yf, k, x], axis = k),
            name = 'C')
 ```
-## Fusion Kernel Performance
+### Fusion Kernel Performance
 
 The shape of [batch=64, heads=8, M=1, N=17, K=128] is chosen to elaborate the performance of the generated code. 17 is chosen as the sequence length since it is the average input length in our production scenarios.
 
@@ -176,22 +184,20 @@ The shape of [batch=64, heads=8, M=1, N=17, K=128] is chosen to elaborate the pe
 
 The kernel fusion optimization brings a further <b>*1.7X*</b> speed-up.
 
-# Integration with Tensorflow
+## Integration with Tensorflow
 
 The input shape of batch matmul in our workload is finite and can be enumerated easily in advance. With those pre-defined shapes, we can generate highly optimized CUDA kernel ahead of time (fixed shape computation could bring the best optimization potential). Meanwhile, a general batch matmul kernel suitable for most of the shapes will also be generated to provide a fall-back machanism for the shapes which does not have a corresponding ahead-of-time generated kernel.
 
-The generated efficient kernels for specific shapes and the fall-back one are integrated into the Tensorflow framework. We develop fused ops, such as BatchMatMulTranspose or BatchMatMulAdd, to launch the specific generated kernel for certain input shape or invoke the fall-back kernel. A graph optimization pass is conducted to automatically replace the origin batch *matmul + add/transpose* pattern with the fused ops. Meanwhile, by combining a more aggressive graph optimization pass, we are trying to exploit TVM to generate more efficient fusion kernels for the long-tail operation patterns to further speed up the end-to-end performance.
+The generated efficient kernels for specific shapes and the fall-back one are integrated into the Tensorflow framework. We develop fused ops, such as BatchMatMulTranspose or BatchMatMulAdd, to launch the specific generated kernel using TVM's runtime API for certain input shape or invoke the fall-back kernel. A graph optimization pass is conducted to automatically replace the origin batch *matmul + add/transpose* pattern with the fused ops. Meanwhile, by combining a more aggressive graph optimization pass, we are trying to exploit TVM to generate more efficient fusion kernels for the long-tail operation patterns to further speed up the end-to-end performance.
 
-# Summary
+## Summary
 Inside Alibaba, we found that TVM is a very productive tool to develop high performance GPU kernels to meet our in-house requirements. In this blog, NMT Transformer model is taken as an example to illustrate our optimization strategy with TVM. Firstly, we locate the hot-spot of Transformer model through first-principle analysis. Then we use TVM to generate highly optimized CUDA kernel to replace cuBLAS version (<b>*13X*</b> speed-up is observed). Next, we leverage TVM's kernel fusion mechanism to fuse the preceding/following operations of batch matmul to bring further performance improvement (with further <b>*1.7X*</b> performance improvment). The end-to-end performance improvement is <b>*1.4X*</b>. Based on those generated kernels a graph optimization pass is developed to replace the original computation pattern with the TVM fused kernels automatically to ensure the optimization is transparent to end users because as AI infrastructure provider we found that transparency of optimization strategy is very important to popularize its adoption. Last but not the least, all those optimizations are integrated into TensorFlow in a loosely coupled way, demonstrating a potential way for integrating TVM with different deep learning frameworks. In addition, there is an ongoing work to integrate TVM as a codegen backend for TensorFlow, we hope in the future more results could be shared with the community.
 
-# Show me the code
-[Our version of fused batch matmul + transpose computation](https://github.com/Orion34C/tvm-batch-matmul-example/blob/master/tvm_batch_matmul_transpose_m1_kX.py)
+## Resources
+- [TVM implementation of fused batch matmul + transpose computation](https://github.com/Orion34C/tvm-batch-matmul-example/blob/master/tvm_batch_matmul_transpose_m1_kX.py)
+- [Link to the group intro of PAI team in chinese](https://zhuanlan.zhihu.com/p/33513874).
 
-# Bio
-This blog is the joint work of Alibaba Group's [PAI-Blade team](https://zhuanlan.zhihu.com/p/33513874).
-
-# References
+## References
 [1] [Attention is All You Need](https://arxiv.org/pdf/1706.03762.pdf)
 
 [2] [nvprof is Your Handy Universal GPU Profiler](https://devblogs.nvidia.com/cuda-pro-tip-nvprof-your-handy-universal-gpu-profiler/)
