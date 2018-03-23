@@ -129,7 +129,7 @@ The results below are obtained on a NVIDIA M40 GPU device with CUDA8.0.
 | [64,8,1,17,128] | 1,1 | 256,1 | 41.95 |
 | [64,8,1,17,128] | 32,1 | 1,1 | 94.61 |
 
-As learned from [past experience](http://tvmlang.org/2017/08/22/Optimize-Deep-Learning-GPU-Operators-with-TVM-A-Depthwise-Convolution-Example.html), the method to find the best combination of `num_thread_y` and `num_thread_x` is through brute-force search. After a brute-force search, the best combination for current shape can be found, which in current computation is `num\thread_y` = 8 and `num_thread_x` = 32.
+As learned from [past experience](http://tvmlang.org/2017/08/22/Optimize-Deep-Learning-GPU-Operators-with-TVM-A-Depthwise-Convolution-Example.html), the method to find the best combination of `num_thread_y` and `num_thread_x` is through brute-force search. After a brute-force search, the best combination for current shape can be found, which in current computation is `num_thread_y` = 8 and `num_thread_x` = 32.
 
 # Fuse batch matmul with other operations
 
