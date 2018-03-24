@@ -6,7 +6,7 @@ date:   2018-03-23
 
 ## Authors
 
-This is a guest blogpost contributed by Alibaba Group's PAI-Blade team
+This is a guest blogpost contributed by Alibaba Group's Machine Translation Platform team and PAI-Blade team
 
 ## Background
 
@@ -195,7 +195,6 @@ Inside Alibaba, we found that TVM is a very productive tool to develop high perf
 
 ## Resources
 - [TVM implementation of fused batch matmul + transpose computation](https://github.com/Orion34C/tvm-batch-matmul-example/blob/master/tvm_batch_matmul_transpose_m1_kX.py)
-- [Link to the group intro of PAI team in chinese](https://zhuanlan.zhihu.com/p/33513874).
 
 ## References
 [1] [Attention is All You Need](https://arxiv.org/pdf/1706.03762.pdf)
