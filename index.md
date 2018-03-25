@@ -7,7 +7,7 @@ description: "TVM"
 {% include JB/setup %}
 
 
-TVM: End to End Optimization stack for AI Frameworks
+![image](/images/logo/tvm-logo-small.png){: width="100px"} End to End Optimization stack for AI Frameworks
 ====================================================
 [![GitHub license](http://dmlc.github.io/img/apache2.svg)](./LICENSE)
 [![Build Status](http://mode-gpu.cs.washington.edu:8080/buildStatus/icon?job=dmlc/tvm/master)](http://mode-gpu.cs.washington.edu:8080/job/dmlc/job/tvm/job/master/)
