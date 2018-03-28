@@ -27,8 +27,8 @@
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
 
+    gtag('js', new Date());
     gtag('config', 'UA-75982049-2');
   </script>
 
@@ -38,14 +38,17 @@
     <div class="topbar">
       <div class="fill">
         <div class="container">
-          <a class="brand" href="{{ HOME_PATH }}">{{ site.title }}</a>
+          <h2>
+          <a href="/" class="nav">
+            <img src="/images/logo/tvm-logo-small-black.png" width="70px">
+          </a>
+          </h2>
           <ul class="nav">
-            {% assign pages_list = site.pages %}
+            {% assign pages_list = site.pages | sort:"order" %}
             {% assign group = 'navigation' %}
             {% include JB/pages_list %}
             <li> <a href="http://nnvm.tvmlang.org">NNVM Compiler Docs</a></li>
             <li> <a href="http://docs.tvmlang.org">TVM Docs</a></li>
-            <li> <a href="https://github.com/dmlc/tvm/blob/master/docs/how_to/contribute.md">Contribute</a></li>
           </ul>
         </div>
       </div>

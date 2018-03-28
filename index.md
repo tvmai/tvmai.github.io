@@ -1,13 +1,13 @@
 ---
 layout: index
-title: "About"
-group : navigation
+title: "TVM Stack"
+order : 0
 description: "TVM"
 ---
 {% include JB/setup %}
 
 
-![image](/images/logo/tvm-logo-small.png){: width="100px"} End to End Optimization stack for AI Frameworks
+End to End Optimization stack for AI Frameworks
 ====================================================
 [![GitHub license](http://dmlc.github.io/img/apache2.svg)](./LICENSE)
 [![Build Status](http://mode-gpu.cs.washington.edu:8080/buildStatus/icon?job=dmlc/tvm/master)](http://mode-gpu.cs.washington.edu:8080/job/dmlc/job/tvm/job/master/)
