@@ -13,11 +13,10 @@ Open End to End AI Compiler Stack
 [![Build Status](http://mode-gpu.cs.washington.edu:8080/buildStatus/icon?job=dmlc/tvm/master)](http://mode-gpu.cs.washington.edu:8080/job/dmlc/job/tvm/job/master/)
 
 
-TVM stack is a unified optimization stack that will close the gap between the productivity-focused deep learning frameworks,
-and the performance- or efficiency-oriented hardware backends. The project contains the following components:
-- [TVM](https://github.com/dmlc/tvm) Tensor level compiler Stack for Deep Learning Systems
-- [NNVM](https://github.com/dmlc/nnvm) Graph compiler stack for Deep Learning Systems
-- NNVM compiler: open compiler for AI Frameworks (shares same repo with NNVM)
+TVM is an open deep learning compiler stack for cpu, gpu and specialized accelerators.
+It aims to close the gap between the productivity-focused deep learning frameworks,
+and the performance- or efficiency-oriented hardware backends.
+
 
 Checkout our techreport [TVM: End-to-End Optimization Stack for Deep Learning](https://arxiv.org/abs/1802.04799)
 
