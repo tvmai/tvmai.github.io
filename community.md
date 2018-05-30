@@ -9,7 +9,7 @@ description: "TVM Community"
 Welcome to the TVM community. We strive to make the TVM stack community-driven.
 
 ## Forum
-Please use the [Discuss Forum](https://discuss.tvmlang.org) any general questions and discussions. We welcome all topics related TVM stack, including, but not restricted to TVM internal, operator support(TOPI), NNVM, hardware backends.
+Please use the [Discuss Forum](https://discuss.tvm.ai) any general questions and discussions. We welcome all topics related TVM stack, including, but not restricted to TVM internal, operator support(TOPI), NNVM, hardware backends.
 
 ## Github Issues
 We use the [Github issue tracker](https://github.com/dmlc/tvm/issues/) for bug reports and roadmap discussion. We adopt a policy to aggressively close inactive issues in the Github so that each of opening issue gets attention from the community.
