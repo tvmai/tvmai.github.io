@@ -17,7 +17,6 @@ TVM is an open deep learning compiler stack for cpu, gpu and specialized acceler
 It aims to close the gap between the productivity-focused deep learning frameworks,
 and the performance- or efficiency-oriented hardware backends.
 
-
 Checkout our techreport [TVM: End-to-End Optimization Stack for Deep Learning](https://arxiv.org/abs/1802.04799)
 
 {:center: style="text-align: center"}
