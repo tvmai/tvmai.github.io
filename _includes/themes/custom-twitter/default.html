@@ -18,10 +18,9 @@
     <!-- Le fav and touch icons -->
   <!-- Update these with your own images
     <link rel="shortcut icon" href="images/logo/tvm-logo.png">
-  <link href="/images/logo/tvm-logo.png" rel="icon" type="image/png"/>
   <link rel="shortcut icon" href="images/logo/tvm-logo.png">
   -->
-
+  <link href="/images/logo/tvm-logo-square.png" rel="icon" type="image/png"/>
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-75982049-2"></script>
   <script>
@@ -38,13 +37,12 @@
     <div class="topbar">
       <div class="fill">
         <div class="container">
-          <h2>
-          <a href="/" class="nav">
-            <img src="/images/logo/tvm-logo-small-black.png" width="70px">
-          </a>
+          <h2 id="logo-wrap">
+            <a href="/" class="nav">
+              <img src="/images/logo/tvm-logo-small-black.png" width="100px">
+            </a>
           </h2>
-          <ul class="nav">
-            <li> <a href="/community.html">Community Support</a></li>
+          <ul class="nav" id="nav-bar">
             {% assign pages_list = site.pages | sort:"order" %}
             {% assign group = 'navigation' %}
             {% include JB/pages_list %}
@@ -56,7 +54,6 @@
     </div>
 
     <div class="container">
-
       <div class="content">
         {{ content }}
       </div>

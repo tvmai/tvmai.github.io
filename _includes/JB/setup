@@ -14,7 +14,7 @@
     {% else %}
        {% assign BASE_PATH = nil %}
        {% assign HOME_PATH = '' %}
-       {% assign BLOG_PATH = site.JB.BLOG_PATH %}
+       {% assign BLOG_PATH = '' %}
     {% endif %}
 
     {% if site.github %}
