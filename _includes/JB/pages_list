@@ -34,7 +34,7 @@ Usage:
       	{% endif %}
       {% endif %}
       {% if node.group == 'blog' %}
-      	{% if page.url == node.url %}
+      	{% if page.group == 'blog' %}
       	<li class="active"><a href="{{ BLOG_PATH }}{{node.url}}.html" class="active">{{node.title}}</a></li>
       	{% else %}
       	<li><a href="{{ BLOG_PATH }}{{node.url}}.html">{{node.title}}</a></li>

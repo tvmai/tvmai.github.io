@@ -1,21 +1,47 @@
 ---
 layout: page
-title: "Community Support"
-order : 2
+title : Community
+header : Community
+order : 10
+group : navigation
 description: "TVM Community"
 ---
+
 {% include JB/setup %}
 
-Welcome to the TVM community. We strive to make the TVM stack community-driven.
+# Community
 
-## Forum
-Please use the [Discuss Forum](https://discuss.tvm.ai) any general questions and discussions. We welcome all topics related TVM stack, including, but not restricted to TVM internal, operator support(TOPI), NNVM, hardware backends.
+Welcome to the TVM community. Here are several ways that you can stay involved.
 
-## Github Issues
-We use the [Github issue tracker](https://github.com/dmlc/tvm/issues/) for bug reports and roadmap discussion. We adopt a policy to aggressively close inactive issues in the Github so that each of opening issue gets attention from the community.
+<br>
+
+## Discuss Forum
+
+We use discuss forum for general discussions. We welcome all topics related TVM stack.
+
+<a href="https://discuss.tvm.ai" class="link-btn">Discuss Forum</a>
+
+<br>
 
 ## Roadmap
-Check out our [Public roadmap](https://github.com/dmlc/tvm/projects/1) on where we are heading. Please talk to us you are interested working in aspects that are not on the roadmap.
+
+We are release our public roadmaps on github.
+Please reach out are interested working in aspects that are not on the roadmap.
+
+<a href="https://github.com/dmlc/tvm/projects/1" class="link-btn">Public Roadmap</a>
+
+<br>
+
+## Github Issues
+We use the Github issue tracker for bug reports and roadmap discussion.
+
+<a href="https://github.com/dmlc/tvm/issues/" class="link-btn">Github Issue Tracker</a>
+
+<br>
+
 
 ## Contributing
-As a community project, we welcome contributions! TVM adopts Apache style committer model. The package is developed and used by the community. Check out the [TVM Contributor guide](https://github.com/dmlc/tvm/blob/master/CONTRIBUTORS.md)
+As a community project, we welcome contributions!
+The package is developed and used by the community.
+
+<a href="http://docs.tvm.ai/contribute" class="link-btn">TVM Contributor Guideline</a>
