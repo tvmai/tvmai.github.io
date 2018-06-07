@@ -16,7 +16,7 @@ Checkout our techreport [TVM: End-to-End Optimization Stack for Deep Learning](h
 
 TVM stack began as a research project at the [SAML group](https://saml.cs.washington.edu/) of
 Paul G. Allen School of Computer Science & Engineering, University of Washington. The project is now driven by an open source community involving multiple industry and academic institutions.
-The project adopt Apache-style contributing model and governs by merit.
+The project adopts Apache-style contributing model and governs by merit.
 
 {:center: style="text-align: center"}
 ![image](/images/main/stack_tvmlang.png){: width="100%"}
