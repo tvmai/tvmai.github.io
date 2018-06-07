@@ -13,14 +13,62 @@ body {
   width: 970px;
 }
 
+#tvm-banner-container {
+  width: 100%;
+  height: 600px;
+  margin-top: -4px;
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  background-position: 4% 60%,  96% 60%, center;
+  background-size: 22%, 20%, 100%;
+  background-image:
+     url("/images/logo/tvm-banner-left-objs-white.svg"),
+     url("/images/logo/tvm-banner-right-objs-white.svg"),
+     linear-gradient(175deg, #46A0F8, #333333);
+}
+
+#tvm-banner-title  {
+  margin: auto;
+  padding: 10% 0px;
+  width: 70%;
+}
+
+#tvm-banner-title p {
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  font-size: 48px;
+  font-weight: 240;
+  color: white;
+  line-height: 50px;
+  text-align: center;
+}
+
+#tvm-banner-subtitle p {
+  font-size: 24px;
+}
+
+#banner-btn {
+  border: 2px solid white;
+  font-size: 20px;
+  margin-top: 50px;
+  padding: 0px 34px;
+  color: white;
+  font-weight: 400;
+  background-color: transparent;
+}
+
+#banner-btn:hover {
+  background-color: white;
+  color: #3e658d;
+  font-weight: 400;
+}
 .span14 {
   width: 970px;
 }
 
+
 /* The white background content wrapper */
 .content {
-  background-color: #fff;
   font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  background-color: #fff;
   padding: 20px;
   margin: 0 -20px; /* negative indent the amount of the padding to maintain the grid system */
   -webkit-border-radius: 0 0 6px 6px;
@@ -34,6 +82,7 @@ body {
 .link-btn {
     background-color: white;
     border: 2px solid #555555;
+    border-radius: 8px;
     color: white;
     padding: 8px 12px;
     text-align: center;
