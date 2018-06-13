@@ -17,7 +17,7 @@ author :
   name :
 
 #
-production_url : http://tvm.ai
+production_url : https://tvm.ai
 
 
 # All Jekyll-Bootstrap specific configurations are namespaced into this hash
@@ -25,8 +25,8 @@ production_url : http://tvm.ai
 JB :
   version : 0.3.0
 
-  BASE_PATH : http://tvm.ai
-  BLOG_PATH : http://tvm.ai
+  BASE_PATH : https://tvm.ai
+  BLOG_PATH : https://tvm.ai
 
   sharing :
     provider : false
