@@ -31,4 +31,4 @@ VTA is a component of TVM which was a research project at the [SAML group](https
 Paul G. Allen School of Computer Science & Engineering, University of Washington. The project is now driven by an open source community involving multiple industry and academic institutions.
 The project adopts [Apache-style merit based governace model](https://docs.tvm.ai/contribute/community.html).
 
-More details on VTA can be found in our [techreport](https://arxiv.org/abs/1807.04188).
+Read more about VTA in our [TVM blog post](https://tvm.ai/2018/07/12/vta-release-announcement.html), or in the [VTA techreport](https://arxiv.org/abs/1807.04188).
