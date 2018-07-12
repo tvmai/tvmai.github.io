@@ -18,7 +18,7 @@ By extending the TVM stack with a customizable, and open source deep learning ha
 This forms a truly end-to-end, from software-to-hardware open source stack for deep learning systems.
 
 {:center: style="text-align: center"}
-![image](http://raw.githubusercontent.com/uwsaml/web-data/master/vta/blogpost/vta_stack.png){: width="40%"}
+![image](http://raw.githubusercontent.com/uwsaml/web-data/master/vta/blogpost/vta_stack.png){: width="50%"}
 {:center}
 
 The VTA and TVM stack together constitute a blueprint for end-to-end, accelerator-centric deep learning system that can:
