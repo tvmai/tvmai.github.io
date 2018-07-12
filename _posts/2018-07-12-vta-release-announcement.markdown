@@ -46,7 +46,7 @@ Finally, our vision is to see VTA grow into an collection of hardware designs, e
 ![image](https://www.acm.org/binaries/content/gallery/acm/ctas/publications/artifact-badges.jpg/artifact-badges.jpg/acm%3Adesktopcta){: width="20%"}
 {:center}
 
-In addition, VTA is one of the fist hardware-software reproduced [ACM artifacts](http://ctuning.org/ae/), which can serve as a basis for reproducible deep learning architecture research.
+In addition, VTA is one of the first hardware-software reproducible [ACM artifacts](http://ctuning.org/ae/), which can serve as a template for reproducible deep learning architecture research.
 The VTA artifact deployable using [CK](http://cknowledge.org/), was presented at ReQuEST 2018, co-located with [ASPLOS](http://cknowledge.org/request-cfp-asplos2018.html).
 
 ### Optimizing Compilers Researchers
@@ -124,7 +124,7 @@ In the left half, convolution layers are bandwidth limited, whereas on the right
 {:center}
 
 The goal behind designing a hardware architecture, and a compiler stack is to bring each workload as close as possible to the roofline of the target hardware.
-The plot belows shows the result of having the hardware and compiler work together to maximize utilization of the available hardware resources.
+The roofline plot shows the effects of having the hardware and compiler work together to maximize utilization of the available hardware resources.
 The technique showcased is latency hiding, which requires explicit dependence tracking at the hardware level, compiler support to partition work, explicit dependence insertion in the instruction stream during code-generation.
 The result is an overall higher utilization of the available compute and memory resources.
 
@@ -136,8 +136,8 @@ The result is an overall higher utilization of the available compute and memory 
 
 A benefit of having a complete compiler stack built for VTA is the ability to run end-to-end workloads. This is compelling in the context of hardware acceleration because we need to understand what performance bottlenecks, and Amdahl limitations stand in the way to obtaining faster performance.
 The bar plot above shows inference performance with and without offloading the ResNet convolutional layers to the FPGA-based VTA design, on the Pynq board's ARM Cortex A9 SoC.
-At a glance, it’s clear that VTA accomplishing its goal, reducing the time it takes to perform convolutions on the CPU (dark blue).
-However, it is clear that other operators need offloading, as they now constitute the new bottleneck.
+At a glance, it iss clear that VTA accomplishing its goal, reducing the time it takes to perform convolutions on the CPU (dark blue).
+However, it becomes apparent that other operators need offloading, as they now constitute a new bottleneck.
 This kind of high-level visibility is essential to system designers who want to understand how systems affect end-to-end performance.
 
 
