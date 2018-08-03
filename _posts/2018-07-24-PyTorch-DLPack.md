@@ -1,29 +1,32 @@
 ---
 layout: post
-title: 'Supporting PyTorch in TVM with DLPack'
+title: 'Building Support for Deep Learning Frameworks in TVM via DLPack'
 author: Eddie Yan
 date: 2018-07-24
 ---
 
-TVM is an open deep learning compiler stack for a large variety of hardware
-devices. Two of its most important features are its strong support for hardware
-that lacks vendor-provided deep learning libraries (e.g., mobile and embedded
-devices) and its ease-of-use in generating fast, customized operator
-implementations.
+DLPack is an intermediate in-memory representation standard for tensor data
+structures. With DLPack as a common representation, we can leverage TVM in
+scripts written for frameworks that traditionally could only rely on
+vendor-provided libraries. TVM packed functions can operate on DLPack tensors,
+which provide wrappers bridging tensor data structures from framworks such as
+PyTorch and MxNet _without any data copying_.
 
+
+As an example, we declare and compile a matrix multiplication operator in TVM,
+and build a wrapper that uses the DLPack representation to allow this operator
+to support PyTorch tensors. We also repeat this demonstration with MxNet. This
+extension allows machine learning developers to quickly port research code to
+relatively unsupported hardware platforms without sacrificing performance.
+
+
+Illustration of how DLPack provides an intermediate wrapper that is shared
+between frameworks and TVM:
+#TODO update figure
 {:center: style="text-align: center"}
 ![image](/images/pytorch-dlpack/flow.png){: width="65%"}<br />
 Figure 1
 {:center}
-
-With DLPack, a framework-agnostic in-memory representation of tensors, we can
-leverage TVM in scripts written for frameworks that traditionally could only rely
-on vendor-provided libraries. As an example, we declare and compile a matrix
-multiplication operator in TVM, and build a wrapper that uses the DLPack
-representation to allow this operator to support PyTorch tensors. This extension
-allows machine learning developers to quickly port research code to relatively
-unsupported hardware platforms without sacrificing performance.
-
 
 First, we compute a reference output in PyTorch:
 ```
@@ -58,6 +61,24 @@ We then convert the TVM function into one that supports PyTorch tensors:
     np.testing.assert_allclose(z.numpy(), z2.numpy())
 ```
 and verify that the results match.
+
+We can repeat the same example, but using MxNet instead:
+```
+    import mxnet
+    from tvm.contrib.mxnet import to_mxnet_func
+    ctx = mxnet.cpu(0)
+    x = mxnet.nd.uniform(shape=(56,56), ctx=ctx)
+    y = mxnet.nd.uniform(shape=(56,56), ctx=ctx)
+    z = mxnet.nd.empty(shape=(56,56), ctx=ctx)
+    f = tvm.build(s, [X, Y, Z], target_host='llvm', name='f')
+    f_mxnet = to_mxnet_func(f)
+    f_mxnet(x, y, z)
+    np.testing.assert_allclose(z.asnumpy(), x.asnumpy().dot(y.asnumpy()))
+```
+
+
+Under the hood of the PyTorch Example
+-------------------------------------
 
 All that is required in this scenario is the extraction of the relevant tensor
 description (type information) and some syntactic sugar via Python decorators.
