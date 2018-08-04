@@ -1,16 +1,61 @@
 ---
 layout: post
-title: 'Building Support for Deep Learning Frameworks in TVM via DLPack'
+title: 'Building a Cross Framework Deep Learning Compiler via TVM and DLPack'
 author: Eddie Yan
-date: 2018-07-24
+date: 2018-08-04
 ---
 
-DLPack is an intermediate in-memory representation standard for tensor data
-structures. With DLPack as a common representation, we can leverage TVM in
-scripts written for frameworks that traditionally could only rely on
-vendor-provided libraries. TVM packed functions can operate on DLPack tensors,
-which provide wrappers bridging tensor data structures from framworks such as
-PyTorch and MxNet _without any data copying_.
+Deep learning frameworks such as Tensorflow, PyTorch, and MxNet provide a
+powerful toolbox for quickly prototyping and deploying deep learning models.
+Unfortunately, their ease-of-use has often come at the cost of fragmentation: it
+is only easy to use each framework in isolation. Vertical integration has made
+development streamlined for common use cases, but venturing off of the beaten
+path can be tricky.
+
+One scenario off of the beaten path that is poorly supported is passing tensors
+_directly_ from one framework to another in memory, without any data duplication
+or copies. Supporting such a use case would enable users to string together
+pipelines where certain operators are better supported in one framework (or
+faster) than another efficiently. A shared data representation between
+frameworks would also bridge this gap, and allow compiler stacks to target a
+single format when generating code for operators.
+
+[DLPack](https://github.com/dmlc/dlpack) is an intermediate in-memory
+representation standard for tensor data structures. With DLPack as a common
+representation, we can leverage TVM in scripts written for frameworks that
+traditionally could only rely on vendor-provided libraries. TVM packed functions
+can operate on DLPack tensors, which provide wrappers bridging tensor data
+structures from frameworks such as PyTorch and MxNet _with zero-data-copy_.
+
+DLPack presents on a simple, portable in-memory data structure:
+```
+/*!
+ * \brief Plain C Tensor object, does not manage memory.
+ */
+typedef struct {
+  /*!
+   * \brief The opaque data pointer points to the allocated data.
+   *  This will be CUDA device pointer or cl_mem handle in OpenCL.
+   *  This pointer is always aligns to 256 bytes as in CUDA.
+   */
+  void* data;
+  /*! \brief The device context of the tensor */
+  DLContext ctx;
+  /*! \brief Number of dimensions */
+  int ndim;
+  /*! \brief The data type of the pointer*/
+  DLDataType dtype;
+  /*! \brief The shape of the tensor */
+  int64_t* shape;
+  /*!
+   * \brief strides of the tensor,
+   *  can be NULL, indicating tensor is compact.
+   */
+  int64_t* strides;
+  /*! \brief The offset in bytes to the beginning pointer to data */
+  uint64_t byte_offset;
+} DLTensor;
+```
 
 
 As an example, we declare and compile a matrix multiplication operator in TVM,
