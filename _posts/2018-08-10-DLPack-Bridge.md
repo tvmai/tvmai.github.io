@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'Building a Cross Framework Deep Learning Compiler via DLPack'
+title: 'Building a Cross-Framework Deep Learning Compiler via DLPack'
 author: Eddie Yan
 date: 2018-08-10
 ---
@@ -90,7 +90,7 @@ schedule:
     k = tvm.reduce_axis((0, n), name='k')
     Z = tvm.compute((n,n), lambda i,j : tvm.sum(X[i,k]*Y[k,j], axis=k))
     s = tvm.create_schedule(Z.op)
-    fadd = tvm.build(s, [X, Y, Z], target_host='llvm', name='fadd')
+    fmm = tvm.build(s, [X, Y, Z], target_host='llvm', name='fmm')
 ```
 For brevity, we do not cover TVM's large collection of scheduling primitives
 that we can use to optimize matrix multiplication. If you wish to make a custom
@@ -100,11 +100,11 @@ found [here](https://docs.tvm.ai/tutorials/optimize/opt_gemm.html).
 We then convert the TVM function into one that supports PyTorch tensors:
 ```python
     from tvm.contrib.dlpack import to_pytorch_func
-    # fadd is the previously built TVM function (Python function)
-    # fadd_pytorch is the wrapped TVM function (Python function)
-    fadd_pytorch = to_pytorch_func(fadd)
+    # fmm is the previously built TVM function (Python function)
+    # fmm is the wrapped TVM function (Python function)
+    fmm_pytorch = to_pytorch_func(fmm)
     z2 = torch.empty(56,56)
-    fadd_pytorch(x, y, z2)
+    fmm_pytorch(x, y, z2)
     np.testing.assert_allclose(z.numpy(), z2.numpy())
 ```
 and verify that the results match.
@@ -126,7 +126,7 @@ We can repeat the same example, but using MxNet instead:
 
 Under the hood of the PyTorch Example
 -------------------------------------
-As TVM provides function to convert dlpack tensors to tvm `NDArray`s and
+As TVM provides [functions](https://github.com/dmlc/tvm/blob/master/include/tvm/runtime/c_runtime_api.h#L455) to convert dlpack tensors to tvm `NDArray`s and
 vice-versa, so all that is needed is some syntactic sugar by wrapping functions.
 `convert_func` is a generic converter for frameworks using tensors with dlpack
 support, and can be used to implement convenient converters, such as
