@@ -2,7 +2,7 @@
 layout: post
 title: 'Building a Cross Framework Deep Learning Compiler via TVM and DLPack'
 author: Eddie Yan
-date: 2018-08-04
+date: 2018-08-10
 ---
 
 Deep learning frameworks such as Tensorflow, PyTorch, and MxNet provide a
@@ -67,9 +67,8 @@ relatively unsupported hardware platforms without sacrificing performance.
 
 Illustration of how DLPack provides an intermediate wrapper that is shared
 between frameworks and TVM:
-#TODO update figure
 {:center: style="text-align: center"}
-![image](/images/pytorch-dlpack/flow.png){: width="65%"}<br />
+![image](/images/pytorch-dlpack/dlpack.png){: width="65%"}<br />
 Figure 1
 {:center}
 
@@ -100,7 +99,8 @@ found [here](https://docs.tvm.ai/tutorials/optimize/opt_gemm.html).
 
 We then convert the TVM function into one that supports PyTorch tensors:
 ```
-    fadd_pytorch = to_pytorch(fadd)
+    from tvm.contrib.dlpack import to_pytorch_func
+    fadd_pytorch = to_pytorch_func(fadd)
     z2 = torch.empty(56,56)
     fadd_pytorch(x, y, z2)
     np.testing.assert_allclose(z.numpy(), z2.numpy())
@@ -124,51 +124,25 @@ We can repeat the same example, but using MxNet instead:
 
 Under the hood of the PyTorch Example
 -------------------------------------
-
-All that is required in this scenario is the extraction of the relevant tensor
-description (type information) and some syntactic sugar via Python decorators.
-To extract the relevant PyTorch information, we use Josh Fromm's "FireTensor"
-TVM extension which uses the DLPack PyTorch bridge.
+As TVM provides function to convert dlpack tensors to tvm `NDArray`s and
+vice-versa, so all that is needed is some syntactic sugar by wrapping functions.
+`convert_func` is a generic converter for frameworks using tensors with dlpack
+support, and can be used to implement convenient converters, such as
+`to_pytorch_func`.
 
 ```
-@tvm.register_extension
-class FireTensor(object):
+def convert_func(tvm_func, tensor_type, to_dlpack_func):
+    assert callable(tvm_func)
 
-    _tvm_tcode = tvm.TypeCode.ARRAY_HANDLE
+    def _wrapper(*args):
+        args = tuple(ndarray.from_dlpack(to_dlpack_func(arg))\
+            if isinstance(arg, tensor_type) else arg for arg in args)
+        return tvm_func(*args)
 
-    def __init__(self, tensor):
-        self.handle = torch._C._to_dlpack(tensor)
-        self.name = self.get_name()
+    return _wrapper
 
-    def get_name(self):
-        ctypes.pythonapi.PyCapsule_GetName.restype = ctypes.c_char_p
-        ctypes.pythonapi.PyCapsule_GetName.argtypes = [ctypes.py_object]
-        return ctypes.pythonapi.PyCapsule_GetName(self.handle)
-
-    def to_torch(self):
-        return torch._C._from_dlpack(self.handle)
-
-    @property
-    def _tvm_handle(self):
-        ctypes.pythonapi.PyCapsule_GetPointer.restype = ctypes.c_void_p
-        ctypes.pythonapi.PyCapsule_GetPointer.argtypes = [ctypes.py_object, ctypes.c_char_p]
-        return ctypes.pythonapi.PyCapsule_GetPointer(self.handle, self.name)
-```
-
-As this extension defines the necessary transformation into a TVM NDArray, we
-can just wrap this using decorators to implement our `to_pytorch` function
-above:
-```
-def to_pytorch(module):
-    #import pytorch, check for pytorch tensor
+def to_pytorch_func(tvm_func):
     import torch
-
-    def converter(func, *args):
-        new_args = tuple([FireTensor(arg) if isinstance(arg, torch.Tensor) else arg for arg in args])
-        return func(*new_args)
-
-    def wrapper(*args):
-        module(*args)
-
-    return decorate(wrapper, converter)
+    import torch.utils.dlpack
+    return convert_func(tvm_func, torch.Tensor, torch.utils.dlpack.to_dlpack)
 ```
