@@ -100,6 +100,8 @@ found [here](https://docs.tvm.ai/tutorials/optimize/opt_gemm.html).
 We then convert the TVM function into one that supports PyTorch tensors:
 ```
     from tvm.contrib.dlpack import to_pytorch_func
+    # fadd is the previously built TVM function (Python function)
+    # fadd_pytorch is the wrapped TVM function (Python function)
     fadd_pytorch = to_pytorch_func(fadd)
     z2 = torch.empty(56,56)
     fadd_pytorch(x, y, z2)
