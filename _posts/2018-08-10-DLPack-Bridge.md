@@ -12,7 +12,7 @@ is only easy to use each framework in isolation. Vertical integration has made
 development streamlined for common use cases, but venturing off of the beaten
 path can be tricky.
 
-One scenario off of the beaten path that is poorly supported is passing tensors
+One scenario that is poorly supported is passing tensors
 _directly_ from one framework to another in memory, without any data duplication
 or copies. Supporting such a use case would enable users to string together
 pipelines where certain operators are better supported in one framework (or
@@ -24,10 +24,10 @@ single format when generating code for operators.
 representation standard for tensor data structures. With DLPack as a common
 representation, we can leverage TVM in scripts written for frameworks that
 traditionally could only rely on vendor-provided libraries. TVM packed functions
-can operate on DLPack tensors, which provide wrappers bridging tensor data
+can operate on DLPack tensors, providing wrappers bridging tensor data
 structures from frameworks such as PyTorch and MxNet _with zero-data-copy_.
 
-DLPack presents on a simple, portable in-memory data structure:
+DLPack presents a simple, portable in-memory data structure:
 ```c
 /*!
  * \brief Plain C Tensor object, does not manage memory.
