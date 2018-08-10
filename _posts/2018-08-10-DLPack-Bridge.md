@@ -5,7 +5,7 @@ author: Eddie Yan
 date: 2018-08-10
 ---
 
-Deep learning frameworks such as Tensorflow, PyTorch, and MxNet provide a
+Deep learning frameworks such as Tensorflow, PyTorch, and ApacheMxNet provide a
 powerful toolbox for quickly prototyping and deploying deep learning models.
 Unfortunately, their ease-of-use has often come at the cost of fragmentation: it
 is only easy to use each framework in isolation. Vertical integration has made
