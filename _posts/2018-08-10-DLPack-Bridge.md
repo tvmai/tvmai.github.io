@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'Building a Cross Framework Deep Learning Compiler via DLPack'
+title: 'Building a Cross-Framework Deep Learning Compiler via DLPack'
 author: Eddie Yan
 date: 2018-08-10
 ---
