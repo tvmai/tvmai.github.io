@@ -28,7 +28,7 @@ can operate on DLPack tensors, which provide wrappers bridging tensor data
 structures from frameworks such as PyTorch and MxNet _with zero-data-copy_.
 
 DLPack presents on a simple, portable in-memory data structure:
-```
+```c
 /*!
  * \brief Plain C Tensor object, does not manage memory.
  */
@@ -73,7 +73,7 @@ Figure 1
 {:center}
 
 First, we compute a reference output in PyTorch:
-```
+```python
     import torch
     x = torch.rand(56,56)
     y = torch.rand(56,56)
@@ -82,7 +82,7 @@ First, we compute a reference output in PyTorch:
 
 We then define and build a TVM matrix multiplication operator, using the default
 schedule:
-```
+```python
     n = tvm.convert(56)
     X = tvm.placeholder((n,n), name='X')
     Y = tvm.placeholder((n,n), name='Y')
@@ -98,7 +98,7 @@ GEMM operator run _fast_ on your hardware device, a detailed tutorial can be
 found [here](https://docs.tvm.ai/tutorials/optimize/opt_gemm.html).
 
 We then convert the TVM function into one that supports PyTorch tensors:
-```
+```python
     from tvm.contrib.dlpack import to_pytorch_func
     # fadd is the previously built TVM function (Python function)
     # fadd_pytorch is the wrapped TVM function (Python function)
@@ -110,7 +110,7 @@ We then convert the TVM function into one that supports PyTorch tensors:
 and verify that the results match.
 
 We can repeat the same example, but using MxNet instead:
-```
+```python
     import mxnet
     from tvm.contrib.mxnet import to_mxnet_func
     ctx = mxnet.cpu(0)
@@ -132,7 +132,7 @@ vice-versa, so all that is needed is some syntactic sugar by wrapping functions.
 support, and can be used to implement convenient converters, such as
 `to_pytorch_func`.
 
-```
+```python
 def convert_func(tvm_func, tensor_type, to_dlpack_func):
     assert callable(tvm_func)
 
