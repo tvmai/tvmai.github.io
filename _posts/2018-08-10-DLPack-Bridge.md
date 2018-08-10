@@ -126,7 +126,7 @@ We can repeat the same example, but using MxNet instead:
 
 Under the hood of the PyTorch Example
 -------------------------------------
-As TVM provides function to convert dlpack tensors to tvm `NDArray`s and
+As TVM provides [functions](https://github.com/dmlc/tvm/blob/f52255b9b50457e8a6b747a6a2352d3b0d444236/include/tvm/runtime/c_runtime_api.h#L455) to convert dlpack tensors to tvm `NDArray`s and
 vice-versa, so all that is needed is some syntactic sugar by wrapping functions.
 `convert_func` is a generic converter for frameworks using tensors with dlpack
 support, and can be used to implement convenient converters, such as
