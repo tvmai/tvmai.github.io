@@ -17,7 +17,7 @@ and the performance- or efficiency-oriented hardware backends. TVM provides the 
 - Infrastructure to automatic generate and optimize tensor operators
   on more backend with better performance.
 
-TVM stack began as a research project at the [SAML group](https://saml.cs.washington.edu/) of
+TVM stack began as a research project at the [SAMPL group](https://sampl.cs.washington.edu/) of
 Paul G. Allen School of Computer Science & Engineering, University of Washington. The project is now driven by an open source community involving multiple industry and academic institutions.
 The project adopts [Apache-style merit based governace model](https://docs.tvm.ai/contribute/community.html).
 
