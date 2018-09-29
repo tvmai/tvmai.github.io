@@ -152,7 +152,7 @@ We choose [NCNN](https://github.com/Tencent/ncnn), a widely used, hand-optimized
 It is well-optimized by NEON assembly. For example, the engineers write
 [13k lines of code](https://github.com/Tencent/ncnn/blob/master/src/layer/arm/convolution_3x3.h) for only 3x3 convolution layers.
 Since they released benchmark number in their github repo, we directly use these numbers.
-TVMs outperform it for all networks on Rasbperry Pi 3B.
+TVM outperforms it for all networks on Rasbperry Pi 3B.
 
 ![image](/images/autotune-all/arm.png){: width="90%"}
 
