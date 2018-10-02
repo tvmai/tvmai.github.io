@@ -50,7 +50,7 @@ for more details.
 
 ## Begin Tuning
 For demonstration, we run our optimization for resnet-18 on RK3399, an ARM development board.
-The detailed instructions are omitted due to space limit of a blog post.
+The detailed instructions are omitted due to the space limit of a blog post.
 Step-by-step tutorials are available for
 [ARM CPU](https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_arm.html),
 [Mobile GPU](https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_mobile_gpu.html),
