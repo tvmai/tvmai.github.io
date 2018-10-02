@@ -2,7 +2,7 @@
 layout: post
 title: Automatic Kernel Optimization for Deep Learning on All Hardware Platforms
 date: 2018-09-29
-author: Lianmin Zheng
+author: Lianmin Zheng, Eddie Yan
 tags:
   - tvm
 ---
@@ -20,12 +20,12 @@ and obtain the state-of-the-art inference performance on hardware platforms incl
 ARM CPUs, Intel CPUs, Mali GPUs, NVIIDA GPUs and AMD GPUs.
 
 In this blog post, I will show the workflow of automatic kernel optimization in TVM compiler stack and 
-benchmark results on the above platforms.
+benchmark results on several hardware platforms.
 
 # System Overview
 
 {:center: style="text-align: center"}
-![image](/images/autotune-all/circle.png){: width="30%"}
+![image](/images/autotune-all/circle.png){: width="35%"}
 {:center}
 <center> Figure 1. System Overview </center> <p></p>
 
@@ -39,45 +39,37 @@ and measures them on real hardware. Then the tuner gets the profiling results. T
 data to fit a prediction model. After fitting the prediction model, the tuner picks the next promising candidates according to the predictions,
 and the loop continues. By this way, we search for fast kernels iteratively.
 
-## Scalable RPC Runtime
-A flexible and scalable runtime for measuremnt is essential to this optimization loop,
-so we built a unified RPC runtime.  You can register all kinds of devices into this system.
-Profiling kernels on these devices is under a same interface. Here is a sample output of our device cluster. 
-You can see how we make it possible to manage a diverse range of devices (GPUs, CPUs, FPGAs) and operating systems (Linux, Android, iOS).
+The below figure shows the difference between traditional auto-tuning and
+AutoTVM. You can refer to our [paper](https://arxiv.org/abs/1805.08166)
+for more details.
 
-```bash
-$ python3 -m tvm.exec.query_rpc_server
-...
-
-Queue Status
---------------------------------
-key        total  free  pending
---------------------------------
-1080ti     4      1     3     
-titanx     2      2     0
-rasp3b     12     6     0      
-rk3399     2      0     8      
-pixel2     2      2     0     
-gfx900     1      1     0     
-hikey960   1      0     3     
-p20pro     2      0     10    
-pynq       7      7     0     
-ultra96    1      1     0      
---------------------------------
-```
+{:center: style="text-align: center"}
+![image](/images/autotune-all/autotvm.png){: width="50%"}
+{:center}
+<center> Figure 2. Traditional Auto-tuning vs AutoTVM </center> <p></p>
 
 ## Begin Tuning
-Once the devices are ready, we can begin tuning.
+For demonstration, we run our optimization for resnet-18 on RK3399, an ARM developement board.
 The detailed instructions are omitted due to space limit of a blog post.
 Step-by-step tutorials are available for
 [ARM CPU](https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_arm.html),
 [Mobile GPU](https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_mobile_gpu.html),
 [NVIDIA/AMD GPU](https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_cuda.html).
 
-I paste a sample output of tuning ResNet-18 on rk3399 board here so you can see how it works.
+First we get a pre-trained model from MXNet model zoo, and extract tuning tasks from it.
+```python
+from mxnet.gluon.model_zoo.vision import get_model
+
+block = get_model('resnet18_v1', pretrained=True)
+net, params = nnvm.frontend.from_mxnet(block)
+
+tasks = autotvm.extract_from_graph(net)
+tune_tasks(tasks, **tuning_option)
+```
 There are 12 different conv2d layers in resnet-18, so we launched 12 tuning tasks.
 For each of them, the tuner made several hundreds of trials and picked the best one.
 After finishing all tuning tasks, we compiled the whole network and generated a single deployable minimal library.
+One sample output is
 
 ```
 Extract tasks...
@@ -107,44 +99,16 @@ your hardware is customized. Because hand-optimized static library cannot take a
 We pre-tuned some popular networks on our device cluster and released the following benchmark.
 Instructions for reproduction is at the end of this blog.
 
-To make sure that our performance are state-of-the-art and comparable to
-hand-optimized assembly-level kernels, we also compare our result to widely used, traditional libraries
-on each platform.
-
-Getting comprehensive benchmark results of TVM is easy since we have unified runtime interface,
-but running these benchmarks on other libraries is really a pain. I am lazy for this blog post,
-so I will first put all our numbers, and then do some incomplete comparison with other libraries.
-
-## Our Results
-We tested the following networks on ImageNet (3x224x224) dataset with batch size = 1 and data type = float32.
-The reporeted numbers are time costs per image in millisecond.
-
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| | **densenet121** | **inception v3** | **mobilenet** | **mobilenet v2** | **resnet18** | **resnet50** | **squeezenet v1.0** | **squeezenet v1.1** | **vgg16** | **vgg19** |
-| **ARM CPU** |
-| Huawei P20 Pro | 181.4 | 439.9 | 56.1 | 34.5 | 76.5 | 208.2 | 51.8 | 25.7 | 480.6 | 627.0 |
-| Google Pixel2 | 162.2 | 433.5 | 39.5 | 30.1 | 61.1 | 181.3 | 47.3 | 23.2 | 391.1 | 487.7 |
-| Xilinx PYNQ | 2888.3 | 9709.1 | 723.5 | 514.3 | 1234.6 | 3580.5 | 909.9 | 477.3 | <sup>-(Note 1)</sup>  | - |
-| Firefly RK3399 | 335.9 | 1285.9 | 78.6 | 66.7 | 161.2 | 403.8 | 94.6 | 48.5 | 902.9 | 1090.1 |
-| Raspberry Pi 3B | 608.4 | 2065.7 | 122.3 | 103.9 | 314.4 | 722.8 | 185.2 | 94.2 | 1801.4 | 2124.2 |
-| **Mali GPU** |
-| Mali-T860 | 461.5 | 1055.6 | 75.1 | 85.4 | 127.8 | 412.5 | 108.7 | 57.6 | 678.1 | 799.1 |
-| **NVIDIA GPU** |
-| GTX 1080 Ti | 3.5 | 5.8 | 0.6 | - <sup>(Note 2) </sup> | - | 2.7 | - | - | 4.0 | 4.6 |
-| GTX TITAN X | 5.8 | 9.7 | 1.0 | - | - | 4.3 | - | - | 6.4 | 7.5 |
-| **AMD GPU** |
-| AMD Vega FE | 5.7 | 8.8 | 1.0 | - | - | 4.4 | - | - | 6.1 | 7.0 |
-| |
-
-* Note 1: Out of memory on this board.
-* Note 2: We didn't tune some small networks on GPU due to time limit. TVM can use its fallback mechanism to compile them but the performance is not guaranteed.
-So their results are omitted here.
+Getting comprehensive benchmark results of TVM is easy since we have a unified runtime interface,
+but collecting these benchmarks on other libraries for all platforms is really a pain.
+So I put all our numbers in a table, and then do some incomplete comparison with other libraries.
 
 ## Comparison
-By comparing with heavily optimized traditional libraries and other tensor compilers on each platform,
+By comparing with heavily optimized traditional libraries on each platform,
 we can make sure that the performance of our automatic compilation stack is state-of-the-art.
+
+We tested popular image classification networks on ImageNet (3x224x224) dataset with batch size = 1 and data type = float32.
+The reported numbers are time costs per image in millisecond.
 
 ### ARM CPU
 
@@ -182,10 +146,38 @@ Finally let we take a look at AMD GPU. TVM supports OpenCL and [ROCm](https://ro
 it is more specialized for AMD GPUs. In terms of baseline, [MIOpen](https://github.com/ROCmSoftwarePlatform/MIOpen) is a vendor provided
 kernel library. We integrate its kernel implementation in TVM graph runtime.
 
-We didn't do any specific optimization for AMD GPU. Instead, all code for NVIDIA GPU is directly reused. As for the results,
-TVM is a little bit slower then MIOpen in most cases. But it is much better than PlaidML.
+We didn't do any specific optimization for AMD GPU. Instead, all computation definition/schedule code for NVIDIA GPU is directly reused. As for the results, TVM is a little bit slower then MIOpen in most cases.
 
 ![image](/images/autotune-all/amd.png){: width="90%"}
+
+## All Our Results
+We tested the following networks on ImageNet (3x224x224) dataset with batch size = 1 and data type = float32.
+The reported numbers are time costs per image in millisecond.
+
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| | **densenet121** | **inception v3** | **mobilenet** | **mobilenet v2** | **resnet18** | **resnet50** | **squeezenet v1.0** | **squeezenet v1.1** | **vgg16** | **vgg19** |
+| **ARM CPU** |
+| Huawei P20 Pro | 181.4 | 439.9 | 56.1 | 34.5 | 76.5 | 208.2 | 51.8 | 25.7 | 480.6 | 627.0 |
+| Google Pixel2 | 162.2 | 433.5 | 39.5 | 30.1 | 61.1 | 181.3 | 47.3 | 23.2 | 391.1 | 487.7 |
+| Xilinx PYNQ | 2888.3 | 9709.1 | 723.5 | 514.3 | 1234.6 | 3580.5 | 909.9 | 477.3 | <sup>-(Note 1)</sup>  | - |
+| Firefly RK3399 | 335.9 | 1285.9 | 78.6 | 66.7 | 161.2 | 403.8 | 94.6 | 48.5 | 902.9 | 1090.1 |
+| Raspberry Pi 3B | 608.4 | 2065.7 | 122.3 | 103.9 | 314.4 | 722.8 | 185.2 | 94.2 | 1801.4 | 2124.2 |
+| **Mali GPU** |
+| Mali-T860 | 461.5 | 1055.6 | 75.1 | 85.4 | 127.8 | 412.5 | 108.7 | 57.6 | 678.1 | 799.1 |
+| **NVIDIA GPU** |
+| GTX 1080 Ti | 3.5 | 5.8 | 0.6 | - <sup>(Note 2) </sup> | - | 2.7 | - | - | 4.0 | 4.6 |
+| GTX TITAN X | 5.8 | 9.7 | 1.0 | - | - | 4.3 | - | - | 6.4 | 7.5 |
+| **AMD GPU** |
+| AMD Vega FE | 5.7 | 8.8 | 1.0 | - | - | 4.4 | - | - | 6.1 | 7.0 |
+| |
+
+* Note 1: Out of memory on this board.
+* Note 2: We didn't tune some small networks on GPU due to time limit. TVM can use its fallback mechanism to compile them but the performance is not guaranteed.
+So their results are omitted here.
+
+
 
 ## Show me the code
 The [benchmark](https://github.com/dmlc/tvm/tree/master/apps/benchmark) and tutorials for
@@ -195,7 +187,7 @@ The [benchmark](https://github.com/dmlc/tvm/tree/master/apps/benchmark) and tuto
 are all available. Try tuning for your custom network and hardware devices.
 
 For Intel CPU, right now it is under refactor, but you can take a look at the
-[paper](https://arxiv.org/pdf/1809.02697.pdf) by AWS contributors.
+[paper](https://arxiv.org/abs/1809.02697) by AWS contributors.
 
 # Conclusion
 With an expressive code generator and an efficient search algorithm, we are able to
