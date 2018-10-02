@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Automatic Kernel Optimization for Deep Learning on All Hardware Platforms
-date: 2018-09-29
+date: 2018-10-02
 author: Lianmin Zheng, Eddie Yan
 tags:
   - tvm
