@@ -39,7 +39,7 @@ and profile them on real hardware. Then the tuner gets the profiling results. Th
 data to fit a prediction model. After fitting the prediction model, the tuner picks the next promising candidates according to the predictions,
 and the loop continues. This way, we search for fast kernels iteratively.
 
-The below figure compares between traditional auto-tuning and
+The below figure compares traditional auto-tuning and
 AutoTVM. You can refer to our [paper](https://arxiv.org/abs/1805.08166)
 for more details.
 
