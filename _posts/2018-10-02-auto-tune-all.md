@@ -49,7 +49,7 @@ for more details.
 <center> Figure 2. Traditional Auto-tuning vs AutoTVM </center> <p></p>
 
 ## Begin Tuning
-For demonstration, we run our optimization for resnet-18 on RK3399, an ARM developement board.
+For demonstration, we run our optimization for resnet-18 on RK3399, an ARM development board.
 The detailed instructions are omitted due to space limit of a blog post.
 Step-by-step tutorials are available for
 [ARM CPU](https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_arm.html),
