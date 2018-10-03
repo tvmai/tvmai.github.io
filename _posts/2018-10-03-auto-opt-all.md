@@ -13,7 +13,8 @@ this problem is obtaining high performance kernel implementations for growing mo
 architectures and hardware platforms.
 
 To address this challenge, TVM takes a full stack compiler approach.
-TVM combines code generation and auto-tuning to generate kernels that are comparable to heavily hand-optimized libraries,
+TVM combines code generation and automatic program optimization to generate kernels
+that are comparable to heavily hand-optimized libraries,
 obtaining state-of-the-art inference performance on hardware platforms including
 ARM CPUs, Intel CPUs, Mali GPUs, NVIIDA GPUs and AMD GPUs.
 
@@ -47,7 +48,7 @@ You can refer to our paper[1] for more details.
 {:center: style="text-align: center"}
 ![image](/images/autotune-all/autotvm.png){: width="50%"}
 {:center}
-<center> Figure 2. Compare Traditional Auto-tuning and AutoTVM </center> <p></p>
+<center> Figure 2. Comparison of Traditional Auto-tuning and AutoTVM </center> <p></p>
 
 ## Begin Tuning
 For demonstration, we run our optimization for resnet-18 on RK3399, an ARM development board.
@@ -189,9 +190,9 @@ for inference deployment. TVM just provides such a solution.
 
 ## Links
 [1] benchmark: [https://github.com/dmlc/tvm/tree/master/apps/benchmark](https://github.com/dmlc/tvm/tree/master/apps/benchmark)  
-[2] Tutorial about tuning for ARM CPU: [https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_arm.html](https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_arm.html)  
-[3] Tutorial about tuning for Mobile GPU: [https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_mobile_gpu.html](https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_mobile_gpu.html)  
-[4] Tutorial about tuning for NVIDIA/AMD GPU: [https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_cuda.html](https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_cuda.html)  
+[2] Tutorial on tuning for ARM CPU: [https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_arm.html](https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_arm.html)  
+[3] Tutorial on tuning for Mobile GPU: [https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_mobile_gpu.html](https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_mobile_gpu.html)  
+[4] Tutorial on tuning for NVIDIA/AMD GPU: [https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_cuda.html](https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_cuda.html)  
 [5] Paper about AutoTVM: [Learning to Optimize Tensor Program](https://arxiv.org/abs/1805.08166)  
 [6] Paper about Intel CPU (by AWS contributors) :  [Optimizing CNN Model Inference on CPUs](https://arxiv.org/abs/1809.02697)
 
