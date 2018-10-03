@@ -38,7 +38,7 @@ data to fit a prediction model. After fitting the prediction model, the tuner pi
 and the loop continues. This way, we search for fast kernels iteratively.
 
 The below figure compares traditional auto-tuning and AutoTVM. 
-The major difference is that AutoTVM
+The major difference is that AutoTVM is
 - **Scalable** to heterogenous cluster of devices
 - **Learning** to optimize tensor programs with a transferable machine learning cost model
 
