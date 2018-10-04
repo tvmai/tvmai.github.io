@@ -2,7 +2,7 @@
 layout: post
 title: Automatic Kernel Optimization for Deep Learning on All Hardware Platforms
 date: 2018-10-03
-author: Lianmin Zheng, Eddie Yan
+author: Lianmin Zheng, Eddie Yan, Tianqi Chen
 ---
 
 Optimizing the performance of deep neural network on a diverse range of hardware platforms is still a hard
@@ -38,7 +38,10 @@ data to fit a prediction model. After fitting the prediction model, the tuner pi
 and the loop continues. This way, we search for fast kernels iteratively.
 
 The below figure compares traditional auto-tuning and AutoTVM. 
-The major difference is that AutoTVM scales to more hardware platforms and uses a transferable machine learning cost model to speedup tuning.
+The major difference is that AutoTVM
+- **Scalable** to heterogenous cluster of devices
+- **Learning** to optimize tensor programs with a transferable machine learning cost model
+
 You can refer to our paper[1] for more details.
 
 {:center: style="text-align: center"}
