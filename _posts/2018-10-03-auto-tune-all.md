@@ -3,8 +3,6 @@ layout: post
 title: Automatic Kernel Optimization for Deep Learning on All Hardware Platforms
 date: 2018-10-03
 author: Lianmin Zheng, Eddie Yan
-tags:
-  - tvm
 ---
 
 Optimizing the performance of deep neural network on a diverse range of hardware platforms is still a hard
@@ -41,7 +39,7 @@ and the loop continues. This way, we search for fast kernels iteratively.
 
 The below figure compares traditional auto-tuning and AutoTVM. 
 The major difference is that AutoTVM scales to more hardware platforms and uses a transferable machine learning cost model to speedup tuning.
-You can refer to our [paper](https://arxiv.org/abs/1805.08166) for more details.
+You can refer to our paper[1] for more details.
 
 {:center: style="text-align: center"}
 ![image](/images/autotune-all/autotvm.png){: width="50%"}
@@ -51,10 +49,7 @@ You can refer to our [paper](https://arxiv.org/abs/1805.08166) for more details.
 ## Begin Tuning
 For demonstration, we run our optimization for resnet-18 on RK3399, an ARM development board.
 The detailed instructions are omitted due to the space limit of a blog post.
-Step-by-step tutorials are available for
-[ARM CPU](https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_arm.html),
-[Mobile GPU](https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_mobile_gpu.html),
-[NVIDIA/AMD GPU](https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_cuda.html).
+Links to tutorials for ARM CPU, Mali GPU, NVIDIA GPU, AMD GPU are all available at the end of this blog.
 
 First we get a pre-trained model from MXNet model zoo, and extract tuning tasks from it.
 ```python
@@ -182,20 +177,18 @@ The reported numbers are time costs per image in millisecond.
 When profiling data is not available, TVM can use fallback code generation. 
 But competitive performance is not guaranteed in this scenario.
 
-## Show me the code
-The [benchmark](https://github.com/dmlc/tvm/tree/master/apps/benchmark) and tutorials for
-[ARM CPU](https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_arm.html),
-[Mobile GPU](https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_mobile_gpu.html),
-[NVIDIA/AMD GPU](https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_cuda.html)
-are all available. Try tuning for your custom network and hardware devices.
-
-Intel CPU is currently being refactored, but you can take a look at the
-[paper](https://arxiv.org/abs/1809.02697) by AWS contributors.
-
 # Conclusion
 With an expressive code generator and an efficient search algorithm, we are able to
 generate kernels that are comparable to heavily hand-optimized ones.
 Since programmer time is expensive and machine time is getting cheaper,
 we believe the auto-tuning with real hardware and data in the loop will be the standard workflow
 for inference deployment. TVM just provides such a solution.
+
+## Links
+[1] benchmark: [https://github.com/dmlc/tvm/tree/master/apps/benchmark](https://github.com/dmlc/tvm/tree/master/apps/benchmark)  
+[2] Tutorial about tuning for ARM CPU: [https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_arm.html](https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_arm.html)  
+[3] Tutorial about tuning for Mobile GPU: [https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_mobile_gpu.html](https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_mobile_gpu.html)  
+[4] Tutorial about tuning for NVIDIA/AMD GPU: [https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_cuda.html](https://docs.tvm.ai/tutorials/autotvm/tune_nnvm_cuda.html)  
+[5] Paper about AutoTVM: [Learning to Optimize Tensor Program](https://arxiv.org/abs/1805.08166)  
+[6] Paper about Intel CPU (by AWS contributors) :  [Optimizing CNN Model Inference on CPUs](https://arxiv.org/abs/1809.02697)
 
