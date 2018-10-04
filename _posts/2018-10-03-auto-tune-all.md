@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Automatic Kernel Optimization for Deep Learning on All Hardware Platforms
-date: 2018-10-02
+date: 2018-10-03
 author: Lianmin Zheng, Eddie Yan
 tags:
   - tvm
@@ -25,7 +25,7 @@ benchmark results on several hardware platforms.
 # System Overview
 
 {:center: style="text-align: center"}
-![image](/images/autotune-all/circle.png){: width="35%"}
+![image](/images/autotune-all/overview.png){: width="35%"}
 {:center}
 <center> Figure 1. System Overview </center> <p></p>
 
@@ -39,14 +39,14 @@ and profile them on real hardware. Then the tuner gets the profiling results. Th
 data to fit a prediction model. After fitting the prediction model, the tuner picks the next promising candidates according to the predictions,
 and the loop continues. This way, we search for fast kernels iteratively.
 
-The below figure compares traditional auto-tuning and
-AutoTVM. You can refer to our [paper](https://arxiv.org/abs/1805.08166)
-for more details.
+The below figure compares traditional auto-tuning and AutoTVM. 
+The major difference is that AutoTVM scales to more hardware platforms and uses a transferable machine learning cost model.
+You can refer to our [paper](https://arxiv.org/abs/1805.08166) for more details.
 
 {:center: style="text-align: center"}
 ![image](/images/autotune-all/autotvm.png){: width="50%"}
 {:center}
-<center> Figure 2. Traditional Auto-tuning vs AutoTVM </center> <p></p>
+<center> Figure 2. Compare Traditional Auto-tuning and AutoTVM </center> <p></p>
 
 ## Begin Tuning
 For demonstration, we run our optimization for resnet-18 on RK3399, an ARM development board.
@@ -102,7 +102,6 @@ Instructions for reproduction are at the end of this blog.
 Comprehensively benchmarking TVM is easy since we have a unified runtime interface.
 However maintaining complete, up-to-date, and correct comparisons against all other platforms is not feasible
 without expert assistance from the developers of many other projects.
-
 So we put all our numbers in a table, and then provide an incomplete comparison with some other libraries.
 
 ## Comparison
