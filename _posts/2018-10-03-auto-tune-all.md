@@ -40,7 +40,7 @@ data to fit a prediction model. After fitting the prediction model, the tuner pi
 and the loop continues. This way, we search for fast kernels iteratively.
 
 The below figure compares traditional auto-tuning and AutoTVM. 
-The major difference is that AutoTVM scales to more hardware platforms and uses a transferable machine learning cost model.
+The major difference is that AutoTVM scales to more hardware platforms and uses a transferable machine learning cost model to speedup tuning.
 You can refer to our [paper](https://arxiv.org/abs/1805.08166) for more details.
 
 {:center: style="text-align: center"}
