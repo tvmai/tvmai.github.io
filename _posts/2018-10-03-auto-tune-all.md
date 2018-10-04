@@ -128,10 +128,10 @@ TVM lags behind a bit on vgg-16 because vgg-16 is an old and huge network and ha
 ### NVIDIA GPU
 
 On NVIDIA GPU, [CuDNN](https://developer.nvidia.com/cudnn) and [TensorRT](https://developer.nvidia.com/tensorrt) are two vendor-provided libraries for training and inference respectively. Since we focus on inference,
-we run our benchmark in the unbatched setting. Another tensor compiler [PlaidML](https://github.com/plaidml/plaidml) is also reported as baseline.
-We reference the benchmark results in [PlaidBench](https://github.com/plaidml/plaidbench).
-
-According to the results, TVM achieves parity with TensorRT performance.
+we run our benchmark in the unbatched setting. Another tensor compiler [PlaidML](https://github.com/plaidml/plaidml) is also reported as baseline
+as there is a previous benchmark of it compared against a pre-AutoTVM version of TVM.
+We reference its benchmark results from [PlaidBench](https://github.com/plaidml/plaidbench).
+According to the results below, TVM achieves parity with TensorRT performance.
 
 ![image](/images/autotune-all/nvidia.png){: width="90%"}
 
@@ -143,7 +143,7 @@ it is more specialized for AMD GPUs.
 kernel library. TVM's graph runtime can call MIOpen's kernel implementations directly, so we report
 the baseline performance by using this integration.
 
-We didn't do any specific optimization for AMD GPU. All computation definition/schedule code for NVIDIA GPU is directly reused.
+We didn't do any specific optimization for AMD GPU. All computation definition and schedule code for NVIDIA GPU is directly reused.
 As a result, TVM is a little bit slower then MIOpen in most cases.
 We believe there is still room for improvement.
 
@@ -181,7 +181,7 @@ But competitive performance is not guaranteed in this scenario.
 With an expressive code generator and an efficient search algorithm, we are able to
 generate kernels that are comparable to heavily hand-optimized ones.
 Since programmer time is expensive and machine time is getting cheaper,
-we believe the auto-tuning with real hardware and data in the loop will be the standard workflow
+we believe automatic optimization with real hardware and data in the loop will be the standard workflow
 for inference deployment. TVM just provides such a solution.
 
 ## Links
