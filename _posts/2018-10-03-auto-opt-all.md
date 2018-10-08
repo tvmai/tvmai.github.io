@@ -155,7 +155,7 @@ We believe there is still room for improvement.
 
 ## All Our Results
 We tested the following networks on ImageNet (3x224x224) dataset with batch size = 1 and data type = float32.
-The reported numbers are time costs per image in millisecond.
+The reported numbers are time costs per image in milliseconds.
 
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | |
