@@ -23,6 +23,15 @@ We use discuss forum for general discussions. We welcome all topics related TVM 
 
 <br>
 
+## Announcement Mail List
+
+We use tvm-announcements google group as a one-sided, low noise channel to send the recent
+important news from the community. Please subscribe to the mail-list to get the most recent news in the community.
+
+<a href="https://groups.google.com/forum/#!forum/tvm-announcements/join" class="link-btn">Join the List</a>
+
+<br>
+
 ## Roadmap
 
 We are release our public roadmaps on github.
@@ -49,14 +58,6 @@ The package is developed and used by the community.
 
 <br>
 
-## Announcement Mail List
-
-We use tvm-announcements google group as a one-sided, low noise channel to send the recent
-important news from the community. Please subscribe to the mail-list to get most recent news in the community.
-
-<a href="https://groups.google.com/forum/#!forum/tvm-announcements/join" class="link-btn">Join the Announcement Mail List</a>
-
-<br>
 
 ## Twitter
 
