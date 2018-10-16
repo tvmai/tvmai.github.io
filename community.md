@@ -23,7 +23,7 @@ We use discuss forum for general discussions. We welcome all topics related TVM 
 
 <br>
 
-## Announcement Mail List
+## News Letter
 
 We use tvm-announcements google group as a one-sided, low noise channel to send the recent
 important news from the community. Please subscribe to the mail-list to get the most recent news in the community.
