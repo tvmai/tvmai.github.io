@@ -54,7 +54,7 @@ The package is developed and used by the community.
 This is is an one-sided, low noise channel to get the recent announcement from the community.
 Please subscribe to the mail-list to get most recent news in the community.
 
-<a href="https://groups.google.com/forum/#!forum/tvm-announcements/join" class="link-btn">Announcement Mail List</a>
+<a href="https://groups.google.com/forum/#!forum/tvm-announcements/join" class="link-btn">Join Announcement Mail List</a>
 
 <br>
 
