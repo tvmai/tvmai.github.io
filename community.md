@@ -32,6 +32,7 @@ Please reach out are interested working in aspects that are not on the roadmap.
 
 <br>
 
+
 ## Github Issues
 We use the Github issue tracker for bug reports and roadmap discussion.
 
@@ -45,6 +46,15 @@ As a community project, we welcome contributions!
 The package is developed and used by the community.
 
 <a href="https://docs.tvm.ai/contribute" class="link-btn">TVM Contributor Guideline</a>
+
+<br>
+
+## Announcement Mail List
+
+This is is an one-sided, low noise channel to get the recent announcement from the community.
+Please subscribe to the mail-list to get most recent news in the community.
+
+<a href="https://groups.google.com/forum/#!forum/tvm-announcements/join" class="link-btn">Announcement Mail List</a>
 
 <br>
 
