@@ -28,7 +28,7 @@ We use discuss forum for general discussions. We welcome all topics related TVM 
 We use tvm-announcements google group as a one-sided, low noise channel to send the recent
 important news from the community. Please subscribe to the mail-list to get the most recent news in the community.
 
-<a href="https://groups.google.com/forum/#!forum/tvm-announcements/join" class="link-btn">Join the List</a>
+<a href="https://groups.google.com/forum/#!forum/tvm-announcements/join" class="link-btn">Join the Mail List</a>
 
 <br>
 
