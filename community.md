@@ -51,7 +51,7 @@ The package is developed and used by the community.
 
 ## Announcement Mail List
 
-We use tvm-announcements google group as an one-sided, low noise channel to send the recent
+We use tvm-announcements google group as a one-sided, low noise channel to send the recent
 important news from the community. Please subscribe to the mail-list to get most recent news in the community.
 
 <a href="https://groups.google.com/forum/#!forum/tvm-announcements/join" class="link-btn">Join the Announcement Mail List</a>
