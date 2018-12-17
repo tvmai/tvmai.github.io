@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'Automatic Generation of  Low  Precision  Operator  for  CPUs with TVM'
+title: 'Automating Generation of  Low  Precision  Operators'
 author: Meghan Cowan
 date: 2018-12-13
 ---
@@ -9,19 +9,29 @@ As deep learning models grow larger and more complex, deploying them on low powe
 devices becomes challenging because of their limited compute and energy budgets. A  recent  trend
  in  deep  learning  is  the  use  of  extremely  quantized  models  that operate  on  inputs  and 
  weights  of  a  few  bits, with networks like XNOR-Net, DoReFa-Net, and HWGQ-Net making steady 
-progress improving accuracy. Theoretically,  low  precision operators use less operations than 
+progress improving accuracy. 
+
+An example of a low precision graph snippet is below. The low precision convolution takes in 
+quantized data and bitpacks into the proper data layout for an efficient bitserial convolution.
+The output is in a higher precision and traditional deep learning layers such as batch normalization and ReLu are applied to it, before being re-quantized and sent through another low precision operator.
+
+{:center: style="text-align: center"}
+![image](/images/low-precision/workflow.png){: width="50%"}
+{:center}
+<center> Low precision convolution pipeline.</center> <p></p>
+
+Theoretically,  low  precision operators use less operations than 
 floating point operators, leading many to believe they can achieve up tremendous speedups. 
 However, deep  learning frameworks  leverage  decades  of  engineering  work  through  low  level 
 BLAS  and LAPACK libraries that are incredibly well optimized, and CPUs include intrinsic 
 instructions to accelerate these tasks.  In  practice,  it  is  not  simple  to  develop low-level 
 operators such as convolutions  that  are competitive  with  8-bit  quantized  or  even floating 
 point operators.  
-
 In  this  post  we  introduce  our  approach to automatically generating optimized 
 low  precision  convolutions for  CPUs. We declare our low precision operators so that they compute 
 on efficiently stored low precision inputs, and describe a schedule that describes a search space 
 of implementation parameters. We rely on AutoTVM to quickly search the space and find optimized 
-parameters for the particular convolution, precision, and CPU backend.  
+parameters for the particular convolution, precision, and backend.  
 
 
 # Bitserial Computation Background
@@ -50,7 +60,7 @@ product of A and B’s precision, so this method is only practical for very low 
 
 # Defining Operators in TVM
 Before the computation, input data needs to be bitpacked so that the bitplanes of the input data 
-can be accessed and are packed into an CPU supported datatype such as a uint8 or uint32. We provide 
+can be accessed and are packed into a supported datatype such as a uint8 or uint32. We provide 
 a flexible bitpacking operator that takes arbitrary size input tensors and returns a bitpacked 
 tensor where the user specifies which axis the bitplanes should be.
 
@@ -67,10 +77,6 @@ popcount to accumulate values in the packed data. The bitplane axes become addit
 and compute the binary dot products between different bitplanes of the input and kernel.
 Finally, the output is computed in an unpacked format and in higher precision.
 
-{:center: style="text-align: center"}
-![image](/images/low-precision/workflow.png){: width="50%"}
-{:center}
-<center> Bitserial convolution pipeline.</center> <p></p>
 
 ``` python
 Input_bitpacked = bitpack(Input, activation_bits, pack_axis=3, bit_axis=4, pack_type=’uint32’)
@@ -106,20 +112,32 @@ tvm.compute((batch, out_height, out_width, out_channel), lambda nn, yy, xx, ff:
 ```
 
 In our schedule we apply common optimizations like vectorization and memory tiling to provide better 
-memory locality and take advantage of CPU SIMD units. Some of these optimizations such as tiling, 
-require parameters that need to be tuned to for the specific CPU microarchitecture. We expose these 
+memory locality and take advantage of SIMD units. Some of these optimizations such as tiling, 
+require parameters that need to be tuned to for the specific microarchitecture. We expose these 
 parameters as knobs to TVM and use AutoTVM to automatically tune all the parameters simultaneously. 
  
  
 Finally, we can craft small microkernels to replace the innermost loop(s) of computation and schedule
  them using TVM’s tensorize primitive. Since, compilers often produce suboptimal code, people can 
  often write short assembly sequences that are more efficient. These microkernels often take advantage 
- of new CPU intrinsics that are being introduced to help accelerate deep learning workloads and use 
+ of new intrinsics that are being introduced to help accelerate deep learning workloads and use 
  them clever ways to improve memory accesses or reduce the number instructions required. 
 
 # Results
 Convolution speedups on Raspberry pi 3B compared to 16-bit integer TVM implementation.
 Workload are convolution layers from ResNet18.
+
+{:center: style="text-align: center"}
+![image](/images/low-precision/rasp-conv.png){: width="50%"}
+{:center}
+
+2-bit activation, 1-bit weight convolution speedups on Raspberry pi 3B compared to hand optimized implementation from [High performance ultra-low-precision convolutions
+on mobile devices.](https://arxiv.org/pdf/1712.02427.pdf).
+Workload are convolution layers from ResNet18.
+
+{:center: style="text-align: center"}
+![image](/images/low-precision/rasp-conv-2.png){: width="50%"}
+{:center}
 
 {:center: style="text-align: center"}
 ![image](/images/low-precision/rasp-conv.png){: width="50%"}
