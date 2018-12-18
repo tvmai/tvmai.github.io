@@ -155,7 +155,8 @@ Note: x86 doesn’t support a vectorized popcount for this microarchitecture, so
 
 
 # References
-\[1\] [XNOR-Net](https://arxiv.org/abs/1603.05279)
-\[2\] [HWGQ](https://arxiv.org/abs/1702.00953)
-\[3\] [DoReFa](https://arxiv.org/abs/1606.06160)
-\[3\] [Our ArXiv paper](https://arxiv.org/abs/1810.11066)
+
+[1] [ArXiv paper: Automating Generation of Low Precision Deep Learning Operators](https://arxiv.org/abs/1810.11066)
+[2] [XNOR-Net](https://arxiv.org/abs/1603.05279)
+[3] [HWGQ](https://arxiv.org/abs/1702.00953)
+[4] [DoReFa](https://arxiv.org/abs/1606.06160)
