@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'Automating Generation of  Low  Precision  Operators'
+title: 'Automating Generation of Low Precision Deep Learning Operators'
 author: Meghan Cowan
 date: 2018-12-18
 ---
