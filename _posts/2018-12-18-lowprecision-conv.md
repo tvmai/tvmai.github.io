@@ -139,9 +139,6 @@ Workload are convolution layers from ResNet18.
 ![image](/images/low-precision/rasp-conv-2.png){: width="50%"}
 {:center}
 
-{:center: style="text-align: center"}
-![image](/images/low-precision/rasp-conv.png){: width="50%"}
-{:center}
 
 Convolution speedups on x86 compared to a 32-bit floating point TVM implementation.
 Note: x86 doesn’t support a vectorized popcount for this microarchitecture, so speedups are lower.
