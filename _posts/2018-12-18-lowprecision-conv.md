@@ -125,27 +125,33 @@ Finally, we can craft small microkernels to replace the innermost loop(s) of com
  them clever ways to improve memory accesses or reduce the number instructions required.
 
 ## Results
-Convolution speedups on Raspberry pi 3B compared to 16-bit integer TVM implementation.
+
+### Raspberry Pi
+Convolution speedups on Raspberry Pi 3B compared to 16-bit integer TVM implementation.
 Workload are convolution layers from ResNet18.
 
+{:center: style="text-align: center"}
+![image](/images/low-precision/rasp-conv.png){: width="50%"}
+{:center}
+<center> Speedup of low precision convolutions on a Raspberry Pi compared to 16-bit TVM implementation.</center> <p></p>
 
-2-bit activation, 1-bit weight convolution speedups on Raspberry pi 3B compared to hand optimized implementation from [High performance ultra-low-precision convolutions
+2-bit activation, 1-bit weight convolution speedups on Raspberry Pi 3B compared to hand optimized implementation from [High performance ultra-low-precision convolutions
 on mobile devices.](https://arxiv.org/pdf/1712.02427.pdf).
 Workload are convolution layers from ResNet18.
 
 {:center: style="text-align: center"}
 ![image](/images/low-precision/rasp-conv-2.png){: width="50%"}
 {:center}
+<center> Speedup of 2-bit weight 1-bit activation Raspberry Pi convolutions against a hand optimized implementation.</center> <p></p>
 
-{:center: style="text-align: center"}
-![image](/images/low-precision/rasp-conv.png){: width="50%"}
-{:center}
+### x86
 
 Convolution speedups on x86 compared to a 32-bit floating point TVM implementation.
 Note: x86 doesn’t support a vectorized popcount for this microarchitecture, so speedups are lower.
 {:center: style="text-align: center"}
 ![image](/images/low-precision/x86-conv.png){: width="50%"}
 {:center}
+<center> Speedup of x86 low precision convolutions compared to a 32-bit floating point TVM implementation.</center> <p></p>
 
 ## Show me the code
 
