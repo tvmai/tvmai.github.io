@@ -128,9 +128,6 @@ Finally, we can craft small microkernels to replace the innermost loop(s) of com
 Convolution speedups on Raspberry pi 3B compared to 16-bit integer TVM implementation.
 Workload are convolution layers from ResNet18.
 
-{:center: style="text-align: center"}
-![image](/images/low-precision/rasp-conv.png){: width="50%"}
-{:center}
 
 2-bit activation, 1-bit weight convolution speedups on Raspberry pi 3B compared to hand optimized implementation from [High performance ultra-low-precision convolutions
 on mobile devices.](https://arxiv.org/pdf/1712.02427.pdf).
