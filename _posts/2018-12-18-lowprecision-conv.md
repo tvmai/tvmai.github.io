@@ -34,7 +34,8 @@ of implementation parameters. We rely on AutoTVM to quickly search the space and
 parameters for the particular convolution, precision, and backend.
 
 
-# Bitserial Computation Background
+## Bitserial Computation Background
+
 The  core  of  low  precision  models  is  the bitserial dot product that enables convolution and
 dense operators to be computed using only bitwise operations and popcount.
  Typically, a dot product is computed by element wise multiplication of two vectors followed by
@@ -58,7 +59,7 @@ product of A and B’s precision, so this method is only practical for very low 
 {:center}
 <center> Bitserial dot product.</center> <p></p>
 
-# Defining Operators in TVM
+## Defining Operators in TVM
 Before the computation, input data needs to be bitpacked so that the bitplanes of the input data
 can be accessed and are packed into a supported datatype such as a uint8 or uint32. We provide
 a flexible bitpacking operator that takes arbitrary size input tensors and returns a bitpacked
@@ -123,7 +124,7 @@ Finally, we can craft small microkernels to replace the innermost loop(s) of com
  of new intrinsics that are being introduced to help accelerate deep learning workloads and use
  them clever ways to improve memory accesses or reduce the number instructions required.
 
-# Results
+## Results
 Convolution speedups on Raspberry pi 3B compared to 16-bit integer TVM implementation.
 Workload are convolution layers from ResNet18.
 
@@ -146,13 +147,16 @@ Note: x86 doesn’t support a vectorized popcount for this microarchitecture, so
 ![image](/images/low-precision/x86-conv.png){: width="50%"}
 {:center}
 
-# Show me the code
+## Show me the code
+
 - [TOPI bitserial convolution](https://github.com/dmlc/tvm/blob/master/topi/python/topi/nn/bitserial_conv2d.py)
 - [TOPI ARM cpu bitserial convolution](https://github.com/dmlc/tvm/blob/master/topi/python/topi/arm_cpu/bitserial_conv2d.py)
 
+## References
 
-# References
-\[1\] [XNOR-Net](https://arxiv.org/abs/1603.05279)
-\[2\] [HWGQ](https://arxiv.org/abs/1702.00953)
-\[3\] [DoReFa](https://arxiv.org/abs/1606.06160)
-\[3\] [Our ArXiv paper](https://arxiv.org/abs/1810.11066)
+
+- [1] [Automating Generation of Low Precision Deep Learning Operators](https://arxiv.org/abs/1810.11066)
+- [2] [XNOR-Net](https://arxiv.org/abs/1603.05279)
+- [3] [HWGQ](https://arxiv.org/abs/1702.00953)
+- [4] [DoReFa](https://arxiv.org/abs/1606.06160)
+
