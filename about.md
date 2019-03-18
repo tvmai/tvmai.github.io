@@ -26,5 +26,5 @@ Computational graph optimization to perform tasks such as high-level operator fu
 Then a tensor operator optimization and code generation layer that optimizes tensor operators. More details can be found at the [techreport](https://arxiv.org/abs/1802.04799).
 
 {:center: style="text-align: center"}
-![image](/images/main/stack_tvmlang.png){: width="90%"}
+![image](/images/main/tvm-stack.png){: width="80%"}
 {:center}
