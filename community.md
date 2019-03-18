@@ -61,6 +61,6 @@ The package is developed and used by the community.
 
 ## Twitter
 
-<a href="https://twitter.com/TVMProject?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow @TVMProject</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<a href="https://twitter.com/ApacheTVM?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow @ApacheTVM</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
-<a class="twitter-timeline" width="500" height="700" href="https://twitter.com/TVMProject?ref_src=twsrc%5Etfw">Tweets by TVMProject</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<a class="twitter-timeline" width="500" height="700" href="https://twitter.com/ApacheTVM?ref_src=twsrc%5Etfw">Tweets by ApacheTVM</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
