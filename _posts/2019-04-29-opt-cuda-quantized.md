@@ -56,10 +56,10 @@ Taking these factors into account, we use a custom data layout to address this c
 In CUDA int8 2d convolution, we empirically choose `NCHW4c` as data layout and `OIHW4o4i` as weight layout.
 The templates can also be easily generalized to `NCHW[x]c` and `OIHW[x]o[x]i`, where x is an arbitrary positive integer divisible by four.
 In the data layout we choose, slices of channels are in the packed innermost dimension.
-Likewise, we pack slices in both the input and output channel dimensions of the weight so that the output has a consistent data layout with the input, which prevents layout transformations between layers.
+Likewise, we pack slices in both the input and output channel dimensions of the weight so that the output has a consistent data layout with the input, which prevents redundant layout transformations between layers.
 
 We show the computation of one element of the output of the 2d convolution in Figure 2.
-The element in each position of the super dimension NCHW and OIHW is the packed input and kernel, respectively.
+The element in each position of the super dimension (the outer dimension of the blocked layout which contains packed elements) NCHW and OIHW is the packed input and kernel, respectively.
 Each column of the packed kernel comes from a different filter.
 We calculate the dot product between the packed input and each row in the packed kernel using `dp4a`, and accumulate the result to the output tensor.
 
