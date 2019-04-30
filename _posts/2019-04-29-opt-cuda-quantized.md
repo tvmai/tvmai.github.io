@@ -132,7 +132,7 @@ In standard CNN models such as VGG and ResNet, TVM achieves parity with the stat
 
 When benchmarking emerging models, TVM achieves impressive results.
 We obtain significant performance gains on ResNeXt and DCN-ResNet-101.
-Results of DCN-ResNet-101 of TensorRT aree not available because there is no official implementation of the deformable convolution.
+Results of DCN-ResNet-101 of TensorRT are not available because there is no official implementation of the deformable convolution.
 We show that automatic optimization in TVM makes it easy and flexible to support and optimize emerging workloads.
 
 
