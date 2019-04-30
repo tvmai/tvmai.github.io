@@ -10,7 +10,7 @@ Network quantization is an effective approach to accelerating deep learning mode
 In quantized models, both data and model parameters are represented with low precision data types such as `int8` and `float16`.
 The lowered data bandwidth reduces the inference time and memory/storage requirements, as well as the power consumption.
 Meanwhile, under proper quantization schemes, we can minimize the accuracy drops of the quantized models.
-Therefore, quantized operators are of particular interests of researchers and developers as it makes large models suitable to deploy on diverse devices, such as GPU, CPU and mobile devices.
+Therefore, quantized models are of particular interests of researchers and developers as it makes large models suitable to deploy on diverse devices, such as GPU, CPU and mobile devices.
 
 Previously, quantized operators are usually optimized with handcrafted microkernels for different workloads, or rely on blackbox proprietary solutions such as cuDNN and TensorRT.
 Writing a high-performance microkernel in assembly can be very challenging and usually requires heavy engineering effort.
