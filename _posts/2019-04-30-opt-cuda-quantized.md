@@ -23,7 +23,7 @@ Besides, it is difficult to adapt these ad-hoc microkernels to emerging workload
 
 TVM solves this challenge with a full stack compiler and a machine-learning-based optimizer to automatically generate computing kernels.
 TVM can generate effcient kernels via automatic search in a human-designed search space.
-In standard workloads such VGG, ResNet, TVM achieves competitive performance compared with other state-of-the-art frameworks. 
+In standard workloads such as VGG and ResNet, TVM achieves competitive performance compared with other state-of-the-art frameworks. 
 In emerging models such as ResNeXt and Deformable ConvNets, the automatic optimization makes it easy for TVM to adapt to these new workloads and achieve a significant performance boost.
 
 In this post, we show how to use TVM to automatically optimize of quantized deep learning models on CUDA.
