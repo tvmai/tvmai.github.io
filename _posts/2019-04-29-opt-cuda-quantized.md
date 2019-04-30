@@ -26,7 +26,7 @@ TVM can generate effcient kernels via automatic search in a human-designed searc
 In standard workloads such VGG, ResNet, TVM achieves competitive performance compared with other state-of-the-art frameworks. 
 In emerging models such as ResNeXt and Deformable ConvNets, the automatic optimization makes it easy for TVM to adapt to these new workloads and achieve a significant performance boost.
 
-In this post, we introduce the automatic optimization for the int8 CUDA operators in TVM.
+In this post, we introduce automatic optimization for the int8 CUDA operators in TVM.
 
 # Expressing Quantized CUDA Kernels in TVM
 ## Leveraging Tensor Intrinsics via Tensorization
