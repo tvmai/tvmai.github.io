@@ -12,7 +12,7 @@ The lowered data bandwidth reduces the inference time and memory/storage require
 Meanwhile, under proper quantization schemes, we can minimize the accuracy drops of the quantized models.
 Therefore, quantized operators are of particular interests of researchers and developers as it makes large models suitable to deploy on diverse devices, such as GPU, CPU and mobile devices.
 
-Previously, quantized operators are usually optimized with handcrafted microkernels for different workloads, or relies on blackbox proprietary solutions such as cuDNN and TensorRT.
+Previously, quantized operators are usually optimized with handcrafted microkernels for different workloads, or rely on blackbox proprietary solutions such as cuDNN and TensorRT.
 Writing a high-performance microkernel in assembly can be very challenging and usually requires heavy engineering effort.
 Besides, it is difficult to adapt these ad-hoc microkernels to emerging workloads and new devices.
 
