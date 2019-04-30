@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Automating Optimization of Quantized Deep Learning Models on CUDA"
-date:   2019-04-29 00:00:00 +0800
+date:   2019-04-30 00:00:00 +0800
 author: Wuwei Lin
 ---
 Deep learning has been successfully applied to a variety of tasks.
@@ -12,21 +12,21 @@ The lowered data bandwidth reduces the inference time and memory/storage require
 Meanwhile, under proper quantization schemes, we can minimize the accuracy drops of the quantized models.
 Therefore, quantized operators are of particular interests of researchers and developers as it makes large models suitable to deploy on diverse devices, such as GPU, CPU and mobile devices.
 
-Previously, quantized operators are usually optimized with handcrafted microkernels for different workloads.
+Previously, quantized operators are usually optimized with handcrafted microkernels for different workloads, or relies on blackbox proprietary solutions such as cuDNN and TensorRT.
 Writing a high-performance microkernel in assembly can be very challenging and usually requires heavy engineering effort.
-Besides, it is difficult to adapt these ad-hoc microkernels to new workloads and new devices.
+Besides, it is difficult to adapt these ad-hoc microkernels to emerging workloads and new devices.
 
 {:center: style="text-align: center"}
 ![image](/images/cuda-quantized/benchmark.svg){: width="100%"}
 {:center}
 <center> Figure 1. Inference time of different models on TVM, TensorRT, and MXNet </center> <p></p>
 
-TVM solves this challenge with the tensor IR and machine-learning-based automatic optimization. 
+TVM solves this challenge with a full stack compiler and a machine-learning-based optimizer to automatically generate computing kernels.
 TVM can generate effcient kernels via automatic search in a human-designed search space.
 In standard workloads such VGG, ResNet, TVM achieves competitive performance compared with other state-of-the-art frameworks. 
 In emerging models such as ResNeXt and Deformable ConvNets, the automatic optimization makes it easy for TVM to adapt to these new workloads and achieve a significant performance boost.
 
-In this post, we introduce automatic optimization for the int8 CUDA operators in TVM.
+In this post, we show how to use TVM to automatically optimize of quantized deep learning models on CUDA.
 
 # Expressing Quantized CUDA Kernels in TVM
 ## Leveraging Tensor Intrinsics via Tensorization
@@ -143,3 +143,5 @@ We show that automatic optimization in TVM makes it easy and flexible to support
 * [CUDA int8 dense](https://github.com/dmlc/tvm/blob/master/topi/python/topi/cuda/dense.py)
 * [Tensor intrinsics declaration](https://github.com/dmlc/tvm/blob/master/topi/python/topi/cuda/tensor_intrin.py) 
 
+# Bio & Acknowledgement
+[Wuwei Lin](https://wuwei.io/) is an undergraduate student at SJTU. He is currently an intern at TuSimple. The author has many thanks to [Tianqi Chen](https://homes.cs.washington.edu/~tqchen/) and [Eddie Yan](https://homes.cs.washington.edu/~eqy/) for their reviews.
