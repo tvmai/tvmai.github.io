@@ -22,7 +22,7 @@ Besides, it is difficult to adapt these ad-hoc microkernels to emerging workload
 <center> Figure 1. Inference time of different models on TVM, TensorRT, and MXNet </center> <p></p>
 
 TVM solves this challenge with a full stack compiler and a machine-learning-based optimizer to automatically generate computing kernels.
-TVM can generate effcient kernels via automatic search in a human-designed search space.
+TVM can generate efficient kernels via automatic search in a human-designed search space.
 In standard workloads such as VGG and ResNet, TVM achieves competitive performance compared with other state-of-the-art frameworks. 
 In emerging models such as ResNeXt and Deformable ConvNets, the automatic optimization makes it easy for TVM to adapt to these new workloads and achieve a significant performance boost.
 
@@ -38,7 +38,7 @@ Currently, [dp4a](https://devblogs.nvidia.com/mixed-precision-programming-cuda-8
 `dp4a` is a CUDA intrinsic on Compute Capability 6.1 devices.
 It is a mixed-precision instruction that provides the efficient computation of the dot product between two 4-element 8-bit integer vectors and accumulates the result in 32-bit format.
 Using `dp4a`, we can implement a dot product between 8-bit integer vectors with number of elements evenly divisible by four.
-With an efficient dot product operator, we can implement high-level operators such as 2d convolution dense layers as these operators are commonly backed by dot products.
+With an efficient dot product operator, we can implement high-level operators such as 2d convolution and dense layers as these operators are commonly backed by dot products.
 
 To illustrate, in 2d convolution we accumulate along the channel, the width, and the height axis of the kernel.
 This is a typical use case of `dp4a`.
@@ -106,7 +106,7 @@ net, params = relay.from_mxnet(sym, shape={'data': (1, 3, 224, 224)}, arg_params
 
 Next, we use the relay quantization API to convert it to a quantized model.
 ```python
-net = relay.quantize.quantize(sym, params=params)
+net = relay.quantize.quantize(net, params=params)
 ```
 
 Then, we use AutoTVM to extract tuning tasks for the operators in the model and perform automatic optimization. The [AutoTVM tutorial](https://docs.tvm.ai/tutorials/autotvm/tune_relay_cuda.html) provides an example for this.
