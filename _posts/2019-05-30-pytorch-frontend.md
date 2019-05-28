@@ -50,7 +50,7 @@ torch_tvm.enable(opt_level=3)
 iters = 100
 warmup = 10
 
-# Ensure your model is in eval mode and also turn of gradients.
+# Ensure your model is in eval mode and also turn off gradients.
 with torch.no_grad():
   # Use tuned parameters for better performance.
   with autotvm.apply_history_best("test/autotvm_tuning.log"):
