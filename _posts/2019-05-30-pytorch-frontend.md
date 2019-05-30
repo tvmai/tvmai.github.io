@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Integrating TVM into PyTorch"
-date:   2019-05-30 17:00:00 -0800
+date:   2019-05-30 
 author: Bram Wasti
 ---
 
