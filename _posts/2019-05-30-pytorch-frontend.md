@@ -39,7 +39,10 @@ During user invocation, the PyTorch JIT runtime will determine input shape infor
 Out of the box TVM provides over two times the performance of the default PyTorch JIT backend for various ResNet models.
 Below is a graph that details the iterations per second achieved with 16 threads on an AWS c5n.4xlarge instance (larger is better):
 
-![bench](https://i.imgur.com/KfJ7oas.png)
+{:center: style="text-align: center"}
+![bench](https://i.imgur.com/KfJ7oas.png){: width="90%"}
+{:center}
+
 
 These results are quite encouraging, and the project will continue to focus on improving CPU inference speed across more models.
 
