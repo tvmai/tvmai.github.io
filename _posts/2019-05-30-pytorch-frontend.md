@@ -1,4 +1,16 @@
-PyTorch now has an official TVM-based backend, [torch_tvm](https://github.com/pytorch/tvm).  Usage is simple:
+---
+layout: post
+title:  "Integrating TVM into PyTorch"
+date:   2019-05-30 17:00:00 -0800
+author: Bram Wasti
+---
+
+As TVM continuously demonstrates improvements to the efficiency of deep learning execution,
+it has become clear that PyTorch stands to benefit from directly leveraging the compiler stack.
+A major tenet of PyTorch is providing seamless and robust integrations that don't get in the user's way.
+To that end, PyTorch now has an official TVM-based backend, [torch_tvm](https://github.com/pytorch/tvm).  
+
+Usage is simple:
 
 ```
 import torch_tvm
@@ -71,3 +83,23 @@ with torch.no_grad():
 ```
 
 Much of this code comes from [benchmarks.py](https://github.com/pytorch/tvm/blob/master/test/benchmarks.py).  Note that tuned parameters for AVX2 LLVM compilation is in the `test/` folder of the repo.
+
+If you are more comfortable using Relay directly, it is possible to simply extract the expression directly from a
+PyTorch function either via (implicit) tracing or TorchScript:
+
+```
+def add(a, b, c):
+    return a + b + c
+
+# via tracing
+relay_graph = torch_tvm.to_relay(add, inputs)
+
+@torch.jit.script
+def mul(a, b, c):
+    return a * b * c
+
+# via script
+relay_graph = torch_tvm.to_relay(mul, inputs)
+```
+
+
