@@ -2,7 +2,9 @@
 # For more see: http://jekyllrb.com/docs/permalinks/
 permalink: /:categories/:year/:month/:day/:title
 
-exclude: [".rvmrc", ".rbenv-version", "README.md", "Rakefile", "changelog.md"]
+exclude: [".rvmrc", ".rbenv-version", "Rakefile", "changelog.md",
+          "tvm", "Jenkinsfile", ".gitignores", ".gitmodules", "website.tgz",
+          "serve_local.sh"]
 
 highlighter: rouge
 markdown: kramdown
