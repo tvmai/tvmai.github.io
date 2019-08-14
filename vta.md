@@ -18,7 +18,7 @@ By extending the TVM stack with a customizable, and open source deep learning ha
 This forms a truly end-to-end, from software-to-hardware open source stack for deep learning systems.
 
 {:center: style="text-align: center"}
-![image](http://raw.githubusercontent.com/uwsaml/web-data/master/vta/blogpost/vta_stack.png){: width="50%"}
+![image](http://raw.githubusercontent.com/uwsampl/web-data/master/vta/blogpost/vta_stack.png){: width="50%"}
 {:center}
 
 The VTA and TVM stack together constitute a blueprint for end-to-end, accelerator-centric deep learning system that can:
@@ -27,7 +27,7 @@ The VTA and TVM stack together constitute a blueprint for end-to-end, accelerato
 - Lower the barrier of entry for machine learning practitioners to experiment with novel network architectures, operators and data representations that require specialized hardware support.
 
 
-VTA is a component of TVM which was a research project at the [SAML group](https://saml.cs.washington.edu/) of
+VTA is a component of TVM which was a research project at the [SAMPL group](https://sampl.cs.washington.edu/) of
 Paul G. Allen School of Computer Science & Engineering, University of Washington. The project is now driven by an open source community involving multiple industry and academic institutions.
 The project adopts [Apache-style merit based governace model](https://docs.tvm.ai/contribute/community.html).
 
