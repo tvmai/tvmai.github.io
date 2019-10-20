@@ -35,13 +35,16 @@ We use the Github issue tracker for developer RFCs and roadmap discussion.
 ## Mail Lists
 
 As per Apache tradition, everything happens in the community(also) happens in the mail-list.
+Here are the relavant mail-lists:
 
-- [dev@apache.tvm.org](https://lists.apache.org/list.html?dev@tvm.apache.org) All development related
+- [dev@apache.tvm.org](https://lists.apache.org/list.html?dev@tvm.apache.org) development related activities
 - [discuss-archive@apache.tvm.org](https://lists.apache.org/list.html?discuss-archive@tvm.apache.org) archive of discuss forum.
 
-Send an email to dev-subscribe@apache.tvm.org to subscribe to the list.
+To subscribe, send an email to dev-subscribe@apache.tvm.org.
 All discuss forum activity under development tag and github issues with RFC COMMUNITY tags
 are automatically forwarded to dev@
+
+<br>
 
 ## Roadmap
 
