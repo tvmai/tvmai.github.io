@@ -64,6 +64,12 @@ The package is developed and used by the community.
 <br>
 
 ## Organizations using and contributing to TVM
+
+TVM is actived being used and contributed by developers from many organizations.
+This is a community maintained list of organizations using and contributing to tvm
+in alphabetical order.
+
+
 <br>
 
 <img src="images/community/uwcse.png" height="25" />
