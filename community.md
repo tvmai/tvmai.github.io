@@ -63,6 +63,12 @@ The package is developed and used by the community.
 
 <br>
 
+## Organizations using and contributing to TVM
+<br>
+
+<img src="images/community/uwcse.png" height="25" />
+
+<br>
 
 ## Twitter
 
