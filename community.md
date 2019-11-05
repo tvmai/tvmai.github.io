@@ -73,6 +73,7 @@ in alphabetical order.
 <br>
 
 <img src="images/community/uwcse.png" height="25" />
+<img src="images/community/huawei.png" height="35" />
 
 <br>
 
