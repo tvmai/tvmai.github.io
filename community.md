@@ -70,15 +70,16 @@ This is a community maintained list of organizations using and contributing to t
 in alphabetical order.
 
 
-<br>
-
-<img src="images/community/cornell.svg" height="35" />
-<img src="images/community/huawei.png" height="35" />
-<img src="images/community/intel.png" height="40" />
-<img src="images/community/ucla.png" height="35" />
-<img src="images/community/uwcse.png" height="30" />
-<img src="images/community/xilinx.png" height="35" />
-
+<div class="community_logo">
+  <img src="images/community/cornell.svg" height="35" />
+  <img src="images/community/huawei.png" height="35" />
+  <img src="images/community/intel.png" height="40" />
+  <img src="images/community/oasislabs.png" height="30" />
+  <img src="images/community/ucberkeley.png" height="30" />
+  <img src="images/community/ucla.png" height="35" />
+  <img src="images/community/uwcse.png" height="30" />
+  <img src="images/community/xilinx.png" height="30" />
+</div>
 <br>
 
 ## Twitter
