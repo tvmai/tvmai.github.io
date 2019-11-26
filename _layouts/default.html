@@ -1,6 +1,14 @@
 ---
 theme :
   name : custom-twitter
+
+redirect_to:
+  - https://tvm.apache.org
+permalink:
 ---
 {% include JB/setup %}
+{% include redirect.html %}
+
+{% comment %}
 {% include themes/custom-twitter/default.html %}
+{% endcomment %}
