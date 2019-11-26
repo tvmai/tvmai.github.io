@@ -1,3 +1,6 @@
 *~
 _site
 .DS_Store
+.*
+website.tgz
+scripts

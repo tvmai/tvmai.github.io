@@ -2,8 +2,15 @@
 # For more see: http://jekyllrb.com/docs/permalinks/
 permalink: /:categories/:year/:month/:day/:title
 
-exclude: [".rvmrc", ".rbenv-version", "Rakefile", "changelog.md",
-          "tvm", "Jenkinsfile", ".gitignores", ".gitmodules", "website.tgz",
+exclude: [".rvmrc",
+          ".rbenv-version",
+          "Rakefile",
+          "changelog.md",
+          "tvm",
+          "Jenkinsfile",
+          "scripts",
+          ".gitmodules",
+          "website.tgz",
           "serve_local.sh"]
 
 highlighter: rouge
