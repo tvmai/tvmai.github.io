@@ -72,6 +72,7 @@ in alphabetical order.
 
 <div class="community_logo">
   <img src="images/community/alicloud.png" height="35" />
+  <img src="images/community/aws.png" height="35" />
   <img src="images/community/cornell.svg" height="35" />
   <img src="images/community/huawei.png" height="35" />
   <img src="images/community/intel.png" height="40" />
