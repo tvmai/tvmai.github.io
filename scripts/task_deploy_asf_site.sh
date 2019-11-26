@@ -2,18 +2,17 @@
 # Deploy the website to the asf-site branch.
 set -e
 set -u
-
 echo "Start to generate and deploy site ..."
-rm -rf _site
 jekyll b --safe
-cp .gitignore _site
+cp .gitignore .gitignore.bak
 git checkout asf-site
-
 # remove all existing files
 git ls-files | xargs  rm -f
 # copy new files into the current site
+cp .gitignore.bak .gitignore
 cp -rf _site/* .
-git add --all && git commit -am 'nigthly build at `date`'
+DATE=`date`
+git add --all && git commit -am "nigthly build at ${DATE}"
 git push origin asf-site
 git checkout master
 echo "Finish deployment..."
