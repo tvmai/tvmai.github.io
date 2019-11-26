@@ -6,6 +6,7 @@
 ./serve_local.sh
 ```
 
-## AutoBuild Branch
+## Deployment
 
-The ```asf-site``` branch is built automatically do not modify manually.
+We use the script [scripts/deploy_to_asf_site.sh](scripts/deploy_to_asf_site.sh)
+to generate and deploy content to the asf-site branch.

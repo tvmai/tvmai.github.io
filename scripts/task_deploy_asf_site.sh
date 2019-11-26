@@ -12,7 +12,7 @@ git ls-files | xargs  rm -f
 cp .gitignore.bak .gitignore
 cp -rf _site/* .
 DATE=`date`
-git add --all && git commit -am "nigthly build at ${DATE}"
+git add --all && git commit -am "Build at ${DATE}"
 git push origin asf-site
 git checkout master
-echo "Finish deployment..."
+echo "Finish deployment at ${DATE}"
