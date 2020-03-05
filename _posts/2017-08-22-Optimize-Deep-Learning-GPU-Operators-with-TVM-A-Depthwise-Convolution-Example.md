@@ -409,7 +409,7 @@ The advantage of operator fusion is obvious.
 This is not the end, TVM can do operator fusion in a smarter way. You may refer to [this](https://github.com/dmlc/tvm/issues/215) and read the source code provided below.
 
 ## Show me the code
-- Declare: [https://github.com/dmlc/tvm/blob/master/topi/python/topi/nn/convolution.py](https://github.com/dmlc/tvm/blob/master/topi/python/topi/nn/convolution.py)
+- Declare: [https://github.com/dmlc/tvm/blob/master/topi/python/topi/nn/convolution.py](https://github.com/apache/incubator-tvm/blob/master/topi/python/topi/nn/depthwise_conv2d.py)
 - Schedule: [https://github.com/dmlc/tvm/blob/master/topi/python/topi/cuda/depthwise_conv2d.py](https://github.com/dmlc/tvm/blob/master/topi/python/topi/cuda/depthwise_conv2d.py)
 - Test: [https://github.com/dmlc/tvm/blob/master/topi/recipe/conv/depthwise_conv2d_test.py](https://github.com/dmlc/tvm/blob/master/topi/recipe/conv/depthwise_conv2d_test.py)
 
